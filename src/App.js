@@ -1,9 +1,9 @@
 import React from 'react';
-import RectangleGrid from './library/RectangleGrid';
+import RectangleArt from './library/RectangleArt';
 
 function App() {
   
-  return <RectangleGrid />
+  return <RectangleArt />
 }
 
 export default App;
