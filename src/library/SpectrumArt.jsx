@@ -1,28 +1,30 @@
 import "p5/lib/addons/p5.sound";
-import React from "react";
+import React, { useState } from "react";
 import Sketch from "react-p5";
+import Controls, { SketchInstance } from "components/Controls";
 import songNames from "../data/songNames";
 
-function SpectrumConstant() {
+function SpectrumArt() {
   let song;
   let fft;
   let amp;
   let fft2;
   let maxLevel = 0;
   let drawIteration = 0;
-  let fft2Size = 128;
+  const [sketch, setSketch] = useState();
 
   // Controlled Variables
   let backgroundFill = true;
   let opacityFill = 1; // 0.04 1
   let backgroundOpacity = 0.03;
-  let fftSize = 64; // 2, 4, 8, 32, 64, 128, 256, 512
+  let fftSize = 16; // 2, 4, 8, 32, 64, 128, 256, 512
   let curve = true;
   let colorSelect = 0;
   let drawFreq = 1;
   let clearCanvas = false;
   let shouldChangeSong = false;
   let currentSong = "fredAgain.mp3";
+  let previousValues = new Array(fftSize);
 
   let width = window.innerWidth;
   let height = window.innerHeight;
@@ -40,7 +42,9 @@ function SpectrumConstant() {
   const fftSizes = [8, 32, 64, 128, 256];
 
   const preload = (p5) => {
-    song = p5.loadSound(`assets/audio/${currentSong}`);
+    setSketch(new SketchInstance(p5, {}), () => {
+      song = sketch.song;
+    });
   };
 
   const setup = (p5, canvasParentRef) => {
@@ -48,9 +52,8 @@ function SpectrumConstant() {
       canvasParentRef
     );
     fft = new p5.constructor.FFT(0.8, fftSize);
-    fft2 = new p5.constructor.FFT(0.8, fft2Size);
     amp = new p5.constructor.Amplitude();
-    song.play();
+    sketch.song.play();
     p5.background(1);
   };
 
@@ -62,19 +65,7 @@ function SpectrumConstant() {
   };
 
   const draw = (p5) => {
-    if (clearCanvas) {
-      p5.background(1);
-      clearCanvas = false;
-    }
-
-    if (shouldChangeSong) {
-      song.pause();
-      song = p5.loadSound(`assets/audio/${currentSong}`, () => {
-        song.play();
-      });
-      shouldChangeSong = false;
-      maxLevel = 0;
-    }
+    sketch.checkOptions();
 
     let spectrum = fft.analyze();
     p5.noFill();
@@ -195,89 +186,9 @@ function SpectrumConstant() {
         setup={setup}
         draw={draw}
       />
-      <div
-        style={{
-          position: "fixed",
-          top: "30px",
-          right: "10px",
-          display: "grid",
-          fontSize: "10px",
-          color: "white",
-          gridGap: "5px",
-        }}
-        className="controls"
-      >
-        <label for="background-opacity">Background</label>
-        <input
-          id="background-opacity"
-          name="background-opacity"
-          type="range"
-          max="100"
-          min="0"
-          defaultValue="40"
-          step="20"
-          onChange={(e) => changeBackgroundOpacity(e)}
-        ></input>
-        <label for="line-opacity">Line Opacity</label>
-        <input
-          id="line-opacity"
-          name="line-opacity"
-          type="range"
-          max="100"
-          min="0"
-          defaultValue="40"
-          step="20"
-          onChange={(e) => changeLineOpacity(e)}
-        ></input>
-        <label>Line Colors</label>
-        <input
-          id="line-colors"
-          name="line-colors"
-          type="range"
-          max={colors.length}
-          min="1"
-          defaultValue="1"
-          step="1"
-          onChange={(e) => changeColors(e)}
-        ></input>
-        <label>Draw Frequency</label>
-        <input
-          id="draw-freq"
-          name="draw-freq"
-          type="range"
-          max="6"
-          min="1"
-          defaultValue="1"
-          step="1"
-          onChange={(e) => {
-            drawFreq = e.target.value;
-          }}
-        ></input>
-        <label for="backgroundFill">Fill Background</label>
-        <input
-          type="checkbox"
-          defaultChecked={true}
-          onChange={(e) => {
-            backgroundFill = e.target.checked;
-          }}
-        ></input>
-        <button onClick={() => setClearCanvas()}>Clear Canvas</button>
-        <button
-          onClick={() => {
-            maxLevel = 0;
-          }}
-        >
-          Reset Max Level
-        </button>
-        <button onClick={() => pausePlaySong()}>Play/Pause</button>
-        <select defaultValue={currentSong} onChange={(e) => changeSong(e)}>
-          {songNames.map((name) => (
-            <option value={name}>{name.substring(0, name.length - 4)}</option>
-          ))}
-        </select>
-      </div>
+      <Controls sketch={sketch} />
     </>
   );
 }
 
-export default SpectrumConstant;
+export default SpectrumArt;

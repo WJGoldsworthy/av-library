@@ -1,32 +1,29 @@
 import "p5/lib/addons/p5.sound";
 import React from "react";
 import Sketch from "react-p5";
-import songNames from "../data/songNames";
 
-function SpectrumConstant() {
+function MicSpectrum() {
   let song;
   let fft;
-  let amp;
-  let fft2;
-  let maxLevel = 0;
-  let drawIteration = 0;
-  let fft2Size = 128;
-
-  // Controlled Variables
-  let backgroundFill = true;
-  let opacityFill = 1; // 0.04 1
-  let backgroundOpacity = 0.03;
   let fftSize = 64; // 2, 4, 8, 32, 64, 128, 256, 512
-  let curve = true;
+  let opacityFill = 1; // 0.04 1
+  let amp;
   let colorSelect = 0;
+  let fft2;
+  let fft2Size = 128;
+  let backgroundFill = true;
+  let backgroundOpacity = 0.03;
+  let maxLevel = 0;
+  let curve = true;
+  let drawIteration = 0;
   let drawFreq = 1;
+  let mic;
   let clearCanvas = false;
-  let shouldChangeSong = false;
-  let currentSong = "fredAgain.mp3";
 
-  let width = window.innerWidth;
-  let height = window.innerHeight;
-  let heightStart = height - 100;
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  const heightStart = height - 100;
 
   const colors = [
     ["#59c9a5", "#d81e5b", "#fffd98", "#23395b"],
@@ -40,25 +37,19 @@ function SpectrumConstant() {
   const fftSizes = [8, 32, 64, 128, 256];
 
   const preload = (p5) => {
-    song = p5.loadSound(`assets/audio/${currentSong}`);
+    // song = p5.loadSound("assets/audio/BeginByLettingGo.mp3");
   };
 
   const setup = (p5, canvasParentRef) => {
     p5.createCanvas(window.innerWidth, window.innerHeight).parent(
       canvasParentRef
     );
+    mic = new p5.constructor.AudioIn();
+    mic.start();
     fft = new p5.constructor.FFT(0.8, fftSize);
     fft2 = new p5.constructor.FFT(0.8, fft2Size);
-    amp = new p5.constructor.Amplitude();
-    song.play();
+    fft.setInput(mic);
     p5.background(1);
-  };
-
-  const windowResized = (p5) => {
-    p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
-    height = p5.windowHeight;
-    width = p5.windowWidth;
-    heightStart = p5.windowHeight - 100;
   };
 
   const draw = (p5) => {
@@ -66,23 +57,13 @@ function SpectrumConstant() {
       p5.background(1);
       clearCanvas = false;
     }
-
-    if (shouldChangeSong) {
-      song.pause();
-      song = p5.loadSound(`assets/audio/${currentSong}`, () => {
-        song.play();
-      });
-      shouldChangeSong = false;
-      maxLevel = 0;
-    }
-
     let spectrum = fft.analyze();
     p5.noFill();
     if (backgroundFill) {
       p5.background(`rgba(0, 0, 0, ${backgroundOpacity})`);
     }
     if (drawIteration % drawFreq === 0) {
-      let level = amp.getLevel();
+      let level = mic.getLevel();
       if (level > maxLevel) {
         maxLevel = level;
       }
@@ -93,7 +74,6 @@ function SpectrumConstant() {
         );
       }
       let c = hexToRgbA(colors[colorSelect][colorPick]);
-      c = c.replace("1)", "" + opacityFill + ")");
       p5.beginShape();
       p5.stroke(c);
       for (let i = 0; i < spectrum.length * 2; i++) {
@@ -147,7 +127,11 @@ function SpectrumConstant() {
       }
       c = "0x" + c.join("");
       return (
-        "rgba(" + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(",") + ",1)"
+        "rgba(" +
+        [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(",") +
+        "," +
+        opacityFill +
+        ")"
       );
     }
     throw new Error("Bad Hex");
@@ -174,27 +158,9 @@ function SpectrumConstant() {
     clearCanvas = true;
   };
 
-  const pausePlaySong = () => {
-    if (song.isPlaying()) {
-      song.pause();
-    } else {
-      song.play();
-    }
-  };
-
-  const changeSong = (e) => {
-    currentSong = e.target.value;
-    shouldChangeSong = true;
-  };
-
   return (
     <>
-      <Sketch
-        windowResized={windowResized}
-        preload={preload}
-        setup={setup}
-        draw={draw}
-      />
+      <Sketch preload={preload} setup={setup} draw={draw} />
       <div
         style={{
           position: "fixed",
@@ -203,7 +169,6 @@ function SpectrumConstant() {
           display: "grid",
           fontSize: "10px",
           color: "white",
-          gridGap: "5px",
         }}
         className="controls"
       >
@@ -269,15 +234,9 @@ function SpectrumConstant() {
         >
           Reset Max Level
         </button>
-        <button onClick={() => pausePlaySong()}>Play/Pause</button>
-        <select defaultValue={currentSong} onChange={(e) => changeSong(e)}>
-          {songNames.map((name) => (
-            <option value={name}>{name.substring(0, name.length - 4)}</option>
-          ))}
-        </select>
       </div>
     </>
   );
 }
 
-export default SpectrumConstant;
+export default MicSpectrum;

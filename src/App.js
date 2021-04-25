@@ -1,17 +1,19 @@
-import React from 'react';
-import RotatedRectangleArt from './library/RotatedRectangleArt';
-import RectangleArt from './library/RectangleArt';
-
-import RotatedRectangleLive from './library/RotatedRectangleLive';
-import WaveBeat from './library/WaveBeat';
-import WaveBeatConstant from './library/WaveBeatConstant';
-import SpectrumConstant from './library/SpectrumConstant';
-
-import RectangleGrid from './library/RectangleGrid';
+import React from "react";
+import { Switch, BrowserRouter as Router, Route } from "react-router-dom";
+import sketches from "data/sketches";
+import Navigation from "components/Navigation";
 
 function App() {
-  
-  return <SpectrumConstant/>
+  return (
+    <Router>
+      <Navigation />
+      <Switch>
+        {sketches.map((sketch) => (
+          <Route path={`/${sketch.path}`}>{sketch.component}</Route>
+        ))}
+      </Switch>
+    </Router>
+  );
 }
 
 export default App;

@@ -1,0 +1,16 @@
+.c-navigation {
+  display: flex;
+  color: white;
+  align-items: center;
+  width: 100%;
+  position: absolute;
+
+  & .c-nav-item {
+    margin-right: 20px;
+
+    & a {
+      color: white;
+      text-decoration: none;
+    }
+  }
+}
