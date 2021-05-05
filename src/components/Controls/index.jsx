@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import songNames from "data/songNames";
 import "./styles.scss";
 import config from "config";
@@ -37,15 +37,28 @@ export class SketchInstance {
   constructor(p5, options) {
     this.p5 = p5;
     this.isLoaded = false;
-    this.fft = new p5.constructor.FFT(0.6, 64);
-    this.song = p5.loadSound(`${config.s3Url}/audio/apricots.mp3`, () => {
-      this.song.play();
-      this.isLoaded = true;
-    });
+    this.fft = new p5.constructor.FFT(
+      0.6,
+      options?.fftSize ? options.fftSize : 64
+    );
+    this.song = p5.loadSound(
+      `${config.s3Url}/audio/${
+        options?.currentSong ? options.currentSong : "apricots.mp3"
+      }`,
+      () => {
+        this.song.play();
+        this.isLoaded = true;
+      }
+    );
     this.shouldChangeSong = false;
     this.currentSong = "woman.mp3";
     this.changeSong = this.changeSong.bind(this);
+    this.options = options;
   }
+
+  setOptions = (options) => {
+    this.options = options;
+  };
 
   changeSong = (e) => {
     this.currentSong = e.target.value;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sketch from "react-p5";
 import Controls, { SketchInstance } from "components/Controls";
 import "p5/lib/addons/p5.sound";
@@ -8,7 +8,6 @@ function WaveBeatConstant() {
   let fft;
   let fftSize = 64;
   let opacityFill = 1;
-  let peakDetect;
   let colorSelect = 2;
   let fft2;
   let drawFreq = 128;
@@ -24,20 +23,29 @@ function WaveBeatConstant() {
     ["#ffffff", "#656565", "#ffffff", "#FFFFFF"],
   ];
 
+  // Unmount clean up
+  useEffect(() => {
+    return function cleanup() {
+      if (sketch) {
+        sketch.song.pause();
+      }
+    };
+  });
+
   const preload = (p5) => {
-    setSketch(new SketchInstance(p5, {}), () => {
-      song = sketch.song;
-    });
+    fft2 = new p5.constructor.FFT(0.8, drawFreq);
+    setSketch(
+      new SketchInstance(p5, { fft2: fft2, currentSong: "likeThePiano.mp3" }),
+      () => {
+        song = sketch.song;
+      }
+    );
   };
 
   const setup = (p5, canvasParentRef) => {
     p5.createCanvas(window.innerWidth, window.innerHeight).parent(
       canvasParentRef
     );
-    fft = new p5.constructor.FFT(0.8, fftSize);
-    fft2 = new p5.constructor.FFT(0.8, drawFreq);
-    peakDetect = new p5.constructor.PeakDetect();
-    sketch.song.play();
     p5.background(1);
   };
 
@@ -49,7 +57,7 @@ function WaveBeatConstant() {
     let col = Math.floor(Math.random() * 4);
     let c = hexToRgbA(colors[colorSelect][col]);
     c = c.replace("1)", "" + opacityFill + ")");
-    let waveform = fft2.waveform();
+    let waveform = sketch.options.fft2.waveform();
     p5.beginShape();
     p5.stroke(c);
     for (let i = 0; i < waveform.length; i++) {

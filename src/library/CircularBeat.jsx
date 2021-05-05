@@ -159,8 +159,19 @@ function CircularBeat() {
   // Sketch
   const [sketch, setSketch] = useState({});
 
+  // Unmount clean up
+  useEffect(() => {
+    // Something
+    return function cleanup() {
+      if (sketch.isLoaded && sketch.song) {
+        sketch.song.pause();
+        particles = [];
+      }
+    };
+  });
+
   const preload = (p5) => {
-    setSketch(new SketchInstance(p5, {}), () => {
+    setSketch(new SketchInstance(p5, { currentSong: "apricots.mp3" }), () => {
       song = sketch.song;
       return;
     });
@@ -173,6 +184,7 @@ function CircularBeat() {
     p5.background(1);
     for (let i = 0; i < numParticles; i++) {
       const radius = Math.random() * 2 + 1;
+
       particles.push(
         new Particle(
           window.innerWidth / 2,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sketch from "react-p5";
 import Controls, { SketchInstance } from "components/Controls";
 import "p5/lib/addons/p5.sound";
@@ -10,7 +10,6 @@ function WaveBeat() {
   let trends; // 1 for increasing trend, 0 for equal or decreasing
   let fftSize = 64;
   let opacityFill = 0.15;
-  let peakDetect;
   let colorSelect = 0;
   let fft2;
   let drawFreq = 64;
@@ -27,37 +26,54 @@ function WaveBeat() {
     ["#ffffff", "#656565", "#ffffff", "#FFFFFF"],
   ];
 
+  // Unmount clean up
+  useEffect(() => {
+    return function cleanup() {
+      if (sketch) {
+        sketch.song.pause();
+      }
+    };
+  });
+
   const preload = (p5) => {
-    setSketch(new SketchInstance(p5, {}), () => {
-      song = sketch.song;
-    });
+    fft = new p5.constructor.FFT(0.8, fftSize);
+    fft2 = new p5.constructor.FFT(0.8, drawFreq);
+    fft0 = Array.apply(null, Array(fftSize)).map(() => 0);
+    trends = Array.apply(null, Array(fftSize)).map(() => 0);
+    setSketch(
+      new SketchInstance(p5, {
+        currentSong: "BlueBoss.mp3",
+        fft2: fft2,
+        fft0: fft0,
+        trends: trends,
+      }),
+      () => {
+        song = sketch.song;
+      }
+    );
   };
 
   const setup = (p5, canvasParentRef) => {
     p5.createCanvas(window.innerWidth, window.innerHeight).parent(
       canvasParentRef
     );
-    fft = new p5.constructor.FFT(0.8, fftSize);
-    fft2 = new p5.constructor.FFT(0.8, drawFreq);
-    peakDetect = new p5.constructor.PeakDetect();
-    sketch.song.play();
-    fft0 = Array.apply(null, Array(fftSize)).map(() => 0);
-    trends = Array.apply(null, Array(fftSize)).map(() => 0);
     p5.background(0);
   };
 
   const draw = (p5) => {
-    sketch.checkOptions();
+    sketch.checkOptions(() => {
+      p5.background(1);
+    });
 
-    let spectrum = fft.analyze();
+    let spectrum = sketch.fft.analyze();
     let lines = spectrum.filter((item, index) => !(index % numLines));
     p5.noFill();
     lines.forEach((bin, index) => {
-      if (trends[index] && bin === fft0[index]) {
+      if (sketch.options.trends[index] && bin === sketch.options.fft0[index]) {
         let col = Math.floor(Math.random() * 4);
         let c = hexToRgbA(colors[colorSelect][col]);
         c = c.replace("1)", "" + opacityFill + ")");
-        let waveform = fft2.waveform();
+        let waveform = sketch.options.fft2.waveform();
         p5.beginShape();
         p5.stroke(c);
         for (let i = 0; i < waveform.length; i++) {
@@ -67,10 +83,16 @@ function WaveBeat() {
         }
         p5.endShape();
       }
-      trends[index] = determineTrend(bin, fft0[index]);
+      sketch.options.trends[index] = determineTrend(
+        bin,
+        sketch.options.fft0[index]
+      );
     });
-    trends[8] = determineTrend(spectrum[8], fft0[8]);
-    fft0 = spectrum;
+    sketch.options.trends[8] = determineTrend(
+      spectrum[8],
+      sketch.options.fft0[8]
+    );
+    sketch.options.fft0 = spectrum;
   };
 
   const determineTrend = (current, previous) => {

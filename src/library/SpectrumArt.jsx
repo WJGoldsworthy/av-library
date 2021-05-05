@@ -1,14 +1,12 @@
 import "p5/lib/addons/p5.sound";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sketch from "react-p5";
 import Controls, { SketchInstance } from "components/Controls";
-import songNames from "../data/songNames";
 
 function SpectrumArt() {
   let song;
   let fft;
   let amp;
-  let fft2;
   let maxLevel = 0;
   let drawIteration = 0;
   const [sketch, setSketch] = useState();
@@ -19,9 +17,6 @@ function SpectrumArt() {
   let curve = false;
   let colorSelect = 4;
   let drawFreq = 1;
-  let clearCanvas = false;
-  let shouldChangeSong = false;
-  let currentSong = "BlueBoss.mp3";
   let previousValues = [];
   let songDuration;
   let lineHeight;
@@ -41,11 +36,25 @@ function SpectrumArt() {
     ["#fd4339", "#4f32c8", "#edddde", "#FFFFFF"],
     ["#ffffff", "#656565", "#ffffff", "#FFFFFF"],
   ];
-  const backgroundOpacityValues = [0.01, 0.02, 0.03, 0.04, 0.05, 1];
-  const fftSizes = [8, 32, 64, 128, 256];
+
+  // Unmount clean up
+  useEffect(() => {
+    // Something
+    return function cleanup() {
+      if (sketch && sketch.song) {
+        sketch.song.pause();
+      }
+    };
+  });
 
   const preload = (p5) => {
-    setSketch(new SketchInstance(p5, {}), () => {
+    if (exactFft) {
+      fft = new p5.constructor.FFT(0.5, fftSize);
+    } else {
+      fft = new p5.constructor.FFT(0.5, 1024);
+    }
+    amp = new p5.constructor.Amplitude();
+    setSketch(new SketchInstance(p5, { amp: amp, fftSize: 1024 }), () => {
       song = sketch.song;
     });
   };
@@ -54,12 +63,6 @@ function SpectrumArt() {
     p5.createCanvas(window.innerWidth, window.innerHeight).parent(
       canvasParentRef
     );
-    if (exactFft) {
-      fft = new p5.constructor.FFT(0.5, fftSize);
-    } else {
-      fft = new p5.constructor.FFT(0.5, 1024);
-    }
-    amp = new p5.constructor.Amplitude();
     songDuration = sketch.song.duration();
     const sketchWidth = width - 150;
     stepSize = sketchWidth / (songDuration * 60);
@@ -70,7 +73,6 @@ function SpectrumArt() {
         previousValues.push([0, lineHeight * numLines]);
       }
     }
-    sketch.song.play();
     p5.background(1);
   };
 
@@ -90,10 +92,10 @@ function SpectrumArt() {
       p5.background(1);
     });
 
-    let spectrum = fft.analyze();
+    let spectrum = sketch.fft.analyze();
     p5.noFill();
     if (drawIteration % drawFreq === 0) {
-      let level = amp.getLevel();
+      let level = sketch.options.amp.getLevel();
       if (level > maxLevel) {
         maxLevel = level;
       }
@@ -141,35 +143,6 @@ function SpectrumArt() {
       );
     }
     throw new Error("Bad Hex");
-  };
-
-  const changeLineOpacity = (e) => {
-    opacityFill = backgroundOpacityValues[Math.floor(100 / e.target.value)];
-  };
-
-  const changeFftSize = (e) => {
-    fftSize = fftSizes[e.target.value];
-  };
-
-  const changeColors = (e) => {
-    colorSelect = e.target.value - 1;
-  };
-
-  const setClearCanvas = () => {
-    clearCanvas = true;
-  };
-
-  const pausePlaySong = () => {
-    if (song.isPlaying()) {
-      song.pause();
-    } else {
-      song.play();
-    }
-  };
-
-  const changeSong = (e) => {
-    currentSong = e.target.value;
-    shouldChangeSong = true;
   };
 
   return (

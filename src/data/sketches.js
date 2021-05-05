@@ -22,11 +22,11 @@ export default [
     path: "waveformConstant",
     component: <WaveBeatConstant />,
   },
-  {
-    label: "Peak Detect",
-    path: "peakDetect",
-    component: <PeakDetect />,
-  },
+  // {
+  //   label: "Peak Detect",
+  //   path: "peakDetect",
+  //   component: <PeakDetect />,
+  // },
   {
     label: "Mic Spectrum",
     path: "micSpectrum",
@@ -37,36 +37,36 @@ export default [
     path: "spectrumArt",
     component: <SpectrumArt />,
   },
-  {
-    label: "Spectrum Art2",
-    path: "spectrumArt2",
-    component: <SpectrumArt2 />,
-  },
+  // {
+  //   label: "Spectrum Art2",
+  //   path: "spectrumArt2",
+  //   component: <SpectrumArt2 />,
+  // },
   {
     label: "Circular Beat",
     path: "circular",
     component: <CircularBeat />,
   },
-  {
-    label: "Rotating Rectangle Live",
-    path: "rotRectLive",
-    component: <RotatedRectangleLive />,
-  },
-  {
-    label: "Rotating Rectangle Art",
-    path: "rotRectArt",
-    component: <RotatedRectangleArt />,
-  },
+  // {
+  //   label: "Rotating Rectangle Live",
+  //   path: "rotRectLive",
+  //   component: <RotatedRectangleLive />,
+  // },
+  // {
+  //   label: "Rotating Rectangle Art",
+  //   path: "rotRectArt",
+  //   component: <RotatedRectangleArt />,
+  // },
   {
     label: "Rectangle Art",
     path: "rectArt",
     component: <RectangleArt />,
   },
-  {
-    label: "Rectangle Grid",
-    path: "rectGrid",
-    component: <RectangleGrid />,
-  },
+  // {
+  //   label: "Rectangle Grid",
+  //   path: "rectGrid",
+  //   component: <RectangleGrid />,
+  // },
   {
     label: "Spectrum",
     path: "spectrum",
