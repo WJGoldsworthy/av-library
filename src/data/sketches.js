@@ -69,7 +69,7 @@ export default [
   },
   {
     label: "Spectrum",
-    path: "",
+    path: "spectrum",
     component: <SpectrumConstant />,
   },
 ];

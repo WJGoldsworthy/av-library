@@ -9,7 +9,9 @@ function App() {
       <Navigation />
       <Switch>
         {sketches.map((sketch) => (
-          <Route path={`/${sketch.path}`}>{sketch.component}</Route>
+          <Route exact path={`/${sketch.path}`}>
+            {sketch.component}
+          </Route>
         ))}
       </Switch>
     </Router>
