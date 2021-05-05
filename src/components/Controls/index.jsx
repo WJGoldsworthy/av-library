@@ -35,7 +35,12 @@ const Controls = ({ song, selectColors, currentSong, sketch }) => {
 export class SketchInstance {
   constructor(p5, options) {
     this.p5 = p5;
-    this.song = p5.loadSound("assets/audio/saku.mp3");
+    this.isLoaded = false;
+    this.fft = new p5.constructor.FFT(0.6, 64);
+    this.song = p5.loadSound("assets/audio/apricots.mp3", () => {
+      this.song.play();
+      this.isLoaded = true;
+    });
     this.shouldChangeSong = false;
     this.currentSong = "woman.mp3";
     this.changeSong = this.changeSong.bind(this);
@@ -50,11 +55,14 @@ export class SketchInstance {
     this.p5.background(1);
   };
 
-  checkOptions = () => {
+  checkOptions = (callback) => {
     if (this.shouldChangeSong) {
       this.song.pause();
       this.song = this.p5.loadSound(`assets/audio/${this.currentSong}`, () => {
         this.song.play();
+        if (callback) {
+          callback(this.song);
+        }
       });
       this.shouldChangeSong = false;
     }

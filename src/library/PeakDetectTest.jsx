@@ -2,9 +2,8 @@ import "p5/lib/addons/p5.sound";
 import React, { useState } from "react";
 import Sketch from "react-p5";
 import Controls, { SketchInstance } from "components/Controls";
-import songNames from "../data/songNames";
 
-function SpectrumArt() {
+function PeakDetect() {
   let song;
   let fft;
   let amp;
@@ -17,17 +16,36 @@ function SpectrumArt() {
   let opacityFill = 1; // 0.04 1
   let fftSize = 1024; // 2, 4, 8, 32, 64, 128, 256, 512
   let curve = false;
-  let colorSelect = 4;
+  let colorSelect = 1;
   let drawFreq = 1;
-  let clearCanvas = false;
-  let shouldChangeSong = false;
-  let currentSong = "BlueBoss.mp3";
   let previousValues = [];
   let songDuration;
   let lineHeight;
   let stepSize;
   let exactFft = false;
-  let numLines = 8;
+  let numLines = 5;
+  let yDropOff = 1;
+
+  let bassPeak = false;
+  let lowMidPeak = false;
+
+  let peakObj = [
+    { label: "bass", value: false },
+    { label: "lowMid", value: false },
+    { label: "mid", value: false },
+    { label: "highMid", value: false },
+    { label: "treble", value: false },
+  ];
+
+  let pdBass, pdLowMid, pdMid, pdHigh, pdTreble;
+
+  let freqRanges = [
+    [20, 140],
+    [140, 400],
+    [400, 2600],
+    [2600, 5200],
+    [5200, 14000],
+  ];
 
   let width = window.innerWidth;
   let height = window.innerHeight;
@@ -41,8 +59,6 @@ function SpectrumArt() {
     ["#fd4339", "#4f32c8", "#edddde", "#FFFFFF"],
     ["#ffffff", "#656565", "#ffffff", "#FFFFFF"],
   ];
-  const backgroundOpacityValues = [0.01, 0.02, 0.03, 0.04, 0.05, 1];
-  const fftSizes = [8, 32, 64, 128, 256];
 
   const preload = (p5) => {
     setSketch(new SketchInstance(p5, {}), () => {
@@ -59,6 +75,29 @@ function SpectrumArt() {
     } else {
       fft = new p5.constructor.FFT(0.5, 1024);
     }
+    pdBass = new p5.constructor.PeakDetect(
+      freqRanges[0][0],
+      freqRanges[0][1],
+      0.95
+    );
+    pdLowMid = new p5.constructor.PeakDetect(
+      freqRanges[1][0],
+      freqRanges[1][1],
+      0.6
+    );
+    pdMid = new p5.constructor.PeakDetect(freqRanges[2][0], freqRanges[2][1]);
+    pdHigh = new p5.constructor.PeakDetect(freqRanges[3][0], freqRanges[3][1]);
+    pdTreble = new p5.constructor.PeakDetect(
+      freqRanges[4][0],
+      freqRanges[4][1]
+    );
+
+    pdBass.onPeak(bassPeaked);
+    pdLowMid.onPeak(lowMidPeaked);
+    pdMid.onPeak(midPeaked);
+    pdHigh.onPeak(highMidPeaked);
+    pdTreble.onPeak(treblePeaked);
+
     amp = new p5.constructor.Amplitude();
     songDuration = sketch.song.duration();
     const sketchWidth = width - 150;
@@ -72,6 +111,27 @@ function SpectrumArt() {
     }
     sketch.song.play();
     p5.background(1);
+  };
+
+  const bassPeaked = () => {
+    peakObj[0].value = true;
+  };
+
+  const lowMidPeaked = () => {
+    peakObj[1].value = true;
+    console.log("peak");
+  };
+
+  const midPeaked = () => {
+    peakObj[2].value = true;
+  };
+
+  const highMidPeaked = () => {
+    peakObj[3].value = true;
+  };
+
+  const treblePeaked = () => {
+    peakObj[4].value = true;
   };
 
   const windowResized = (p5) => {
@@ -91,6 +151,12 @@ function SpectrumArt() {
     });
 
     let spectrum = fft.analyze();
+    pdBass.update(fft);
+    pdLowMid.update(fft);
+    pdMid.update(fft);
+    pdHigh.update(fft);
+    pdTreble.update(fft);
+
     p5.noFill();
     if (drawIteration % drawFreq === 0) {
       let level = amp.getLevel();
@@ -98,30 +164,45 @@ function SpectrumArt() {
         maxLevel = level;
       }
       let colorPick = 1;
-      if (maxLevel > 0) {
-        colorPick = Math.floor(
-          p5.map(level, 0, maxLevel, 0, colors[colorSelect].length - 1)
-        );
-      }
-      let c = hexToRgbA(colors[colorSelect][colorPick]);
-      c = c.replace("1)", "" + opacityFill + ")");
-      p5.stroke(c);
 
-      for (let i = 0; i < numLines; i++) {
+      for (let i = 0; i < peakObj.length; i++) {
         let x = drawIteration * stepSize;
         let binDiff = Math.floor(fftSize / numLines);
-        let y = p5.map(
-          spectrum[i * binDiff],
-          0,
-          255,
-          i * lineHeight + lineHeight + 25,
-          i * lineHeight + 25
+        let bin = Math.floor(p5.map(i, 0, numLines, 0, numLines * 0.8));
+        colorPick = Math.floor(
+          p5.map(
+            spectrum[binDiff * i],
+            0,
+            255,
+            0,
+            colors[colorSelect].length - 1
+          )
         );
-        if (curve) {
-          p5.curve(previousValues[i][0], previousValues[i][1], x, y);
+        let c = hexToRgbA(colors[colorSelect][colorPick]);
+        c = c.replace("1)", "" + opacityFill + ")");
+        p5.stroke(c);
+        let y;
+        if (peakObj[i].value) {
+          y = p5.map(
+            fft.getEnergy(peakObj[i].label),
+            0,
+            255,
+            i * lineHeight + lineHeight + 25,
+            i * lineHeight + 25
+          );
+          peakObj[i].value = false;
         } else {
-          p5.line(previousValues[i][0], previousValues[i][1], x, y);
+          if (
+            previousValues[i][1] + yDropOff >=
+            i * lineHeight + lineHeight + 25
+          ) {
+            y = i * lineHeight + lineHeight + 25;
+          } else {
+            y = previousValues[i][1] + yDropOff;
+          }
         }
+
+        p5.line(previousValues[i][0], previousValues[i][1], x, y);
         previousValues[i] = [x, y];
       }
     }
@@ -143,35 +224,6 @@ function SpectrumArt() {
     throw new Error("Bad Hex");
   };
 
-  const changeLineOpacity = (e) => {
-    opacityFill = backgroundOpacityValues[Math.floor(100 / e.target.value)];
-  };
-
-  const changeFftSize = (e) => {
-    fftSize = fftSizes[e.target.value];
-  };
-
-  const changeColors = (e) => {
-    colorSelect = e.target.value - 1;
-  };
-
-  const setClearCanvas = () => {
-    clearCanvas = true;
-  };
-
-  const pausePlaySong = () => {
-    if (song.isPlaying()) {
-      song.pause();
-    } else {
-      song.play();
-    }
-  };
-
-  const changeSong = (e) => {
-    currentSong = e.target.value;
-    shouldChangeSong = true;
-  };
-
   return (
     <>
       <Sketch
@@ -185,4 +237,4 @@ function SpectrumArt() {
   );
 }
 
-export default SpectrumArt;
+export default PeakDetect;

@@ -7,6 +7,9 @@ import RotatedRectangleArt from "library/RotatedRectangleArt";
 import RectangleArt from "library/RectangleArt";
 import RectangleGrid from "library/RectangleGrid";
 import SpectrumArt from "library/SpectrumArt";
+import SpectrumArt2 from "library/SpectrumArt2";
+import PeakDetect from "library/PeakDetectTest";
+import CircularBeat from "library/CircularBeat";
 
 export default [
   {
@@ -20,6 +23,11 @@ export default [
     component: <WaveBeatConstant />,
   },
   {
+    label: "Peak Detect",
+    path: "peakDetect",
+    component: <PeakDetect />,
+  },
+  {
     label: "Mic Spectrum",
     path: "micSpectrum",
     component: <MicSpectrum />,
@@ -28,6 +36,16 @@ export default [
     label: "Spectrum Art",
     path: "spectrumArt",
     component: <SpectrumArt />,
+  },
+  {
+    label: "Spectrum Art2",
+    path: "spectrumArt2",
+    component: <SpectrumArt2 />,
+  },
+  {
+    label: "Circular Beat",
+    path: "circular",
+    component: <CircularBeat />,
   },
   {
     label: "Rotating Rectangle Live",

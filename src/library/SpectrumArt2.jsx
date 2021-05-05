@@ -17,7 +17,7 @@ function SpectrumArt() {
   let opacityFill = 1; // 0.04 1
   let fftSize = 1024; // 2, 4, 8, 32, 64, 128, 256, 512
   let curve = false;
-  let colorSelect = 4;
+  let colorSelect = 1;
   let drawFreq = 1;
   let clearCanvas = false;
   let shouldChangeSong = false;
@@ -27,7 +27,7 @@ function SpectrumArt() {
   let lineHeight;
   let stepSize;
   let exactFft = false;
-  let numLines = 8;
+  let numLines = 10;
 
   let width = window.innerWidth;
   let height = window.innerHeight;
@@ -98,20 +98,25 @@ function SpectrumArt() {
         maxLevel = level;
       }
       let colorPick = 1;
-      if (maxLevel > 0) {
-        colorPick = Math.floor(
-          p5.map(level, 0, maxLevel, 0, colors[colorSelect].length - 1)
-        );
-      }
-      let c = hexToRgbA(colors[colorSelect][colorPick]);
-      c = c.replace("1)", "" + opacityFill + ")");
-      p5.stroke(c);
 
       for (let i = 0; i < numLines; i++) {
         let x = drawIteration * stepSize;
         let binDiff = Math.floor(fftSize / numLines);
+        let bin = Math.floor(p5.map(i, 0, numLines, 0, numLines * 0.8));
+        colorPick = Math.floor(
+          p5.map(
+            spectrum[binDiff * i],
+            0,
+            255,
+            0,
+            colors[colorSelect].length - 1
+          )
+        );
+        let c = hexToRgbA(colors[colorSelect][colorPick]);
+        c = c.replace("1)", "" + opacityFill + ")");
+        p5.stroke(c);
         let y = p5.map(
-          spectrum[i * binDiff],
+          spectrum[bin * binDiff],
           0,
           255,
           i * lineHeight + lineHeight + 25,
@@ -141,35 +146,6 @@ function SpectrumArt() {
       );
     }
     throw new Error("Bad Hex");
-  };
-
-  const changeLineOpacity = (e) => {
-    opacityFill = backgroundOpacityValues[Math.floor(100 / e.target.value)];
-  };
-
-  const changeFftSize = (e) => {
-    fftSize = fftSizes[e.target.value];
-  };
-
-  const changeColors = (e) => {
-    colorSelect = e.target.value - 1;
-  };
-
-  const setClearCanvas = () => {
-    clearCanvas = true;
-  };
-
-  const pausePlaySong = () => {
-    if (song.isPlaying()) {
-      song.pause();
-    } else {
-      song.play();
-    }
-  };
-
-  const changeSong = (e) => {
-    currentSong = e.target.value;
-    shouldChangeSong = true;
   };
 
   return (

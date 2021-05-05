@@ -1,0 +1,7 @@
+Frequency Ranges
+
+bass = [20, 140]
+lowMid = [140, 400]
+mid = [400, 2600]
+highMid = [2600, 5200]
+treble = [5200, 1400]
