@@ -1,6 +1,7 @@
 import React from "react";
 import songNames from "data/songNames";
 import "./styles.scss";
+import config from "config";
 
 const Controls = ({ song, selectColors, currentSong, sketch }) => {
   const pausePlaySong = () => {
@@ -37,7 +38,7 @@ export class SketchInstance {
     this.p5 = p5;
     this.isLoaded = false;
     this.fft = new p5.constructor.FFT(0.6, 64);
-    this.song = p5.loadSound("assets/audio/apricots.mp3", () => {
+    this.song = p5.loadSound(`${config.s3Url}/audio/apricots.mp3`, () => {
       this.song.play();
       this.isLoaded = true;
     });
@@ -58,12 +59,15 @@ export class SketchInstance {
   checkOptions = (callback) => {
     if (this.shouldChangeSong) {
       this.song.pause();
-      this.song = this.p5.loadSound(`assets/audio/${this.currentSong}`, () => {
-        this.song.play();
-        if (callback) {
-          callback(this.song);
+      this.song = this.p5.loadSound(
+        `${config.s3Url}/audio/${this.currentSong}`,
+        () => {
+          this.song.play();
+          if (callback) {
+            callback(this.song);
+          }
         }
-      });
+      );
       this.shouldChangeSong = false;
     }
   };
