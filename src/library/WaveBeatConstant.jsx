@@ -34,8 +34,13 @@ function WaveBeatConstant() {
 
   const preload = (p5) => {
     fft2 = new p5.constructor.FFT(0.8, drawFreq);
+    let amp = new p5.constructor.Amplitude();
     setSketch(
-      new SketchInstance(p5, { fft2: fft2, currentSong: "likeThePiano.mp3" }),
+      new SketchInstance(p5, {
+        amp: amp,
+        fft2: fft2,
+        currentSong: "BeginByLettingGo.mp3",
+      }),
       () => {
         song = sketch.song;
       }
@@ -53,8 +58,8 @@ function WaveBeatConstant() {
     sketch.checkOptions();
     p5.noFill();
     p5.background(1);
-
-    let col = Math.floor(Math.random() * 4);
+    let amp = sketch.options.amp.getLevel();
+    let col = Math.round(p5.map(amp, 0, 1, 0, 4));
     let c = hexToRgbA(colors[colorSelect][col]);
     c = c.replace("1)", "" + opacityFill + ")");
     let waveform = sketch.options.fft2.waveform();
@@ -63,7 +68,7 @@ function WaveBeatConstant() {
     for (let i = 0; i < waveform.length; i++) {
       let x = p5.map(i, 0, waveform.length, 0, width);
       let y = p5.map(waveform[i], -1, 1, 0, height);
-      p5.vertex(x, y);
+      p5.curveVertex(x, y);
     }
     p5.endShape();
   };

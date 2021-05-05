@@ -1,16 +1,13 @@
 import "p5/lib/addons/p5.sound";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Sketch from "react-p5";
-import songNames from "../data/songNames";
+import Controls, { SketchInstance } from "components/Controls";
 
 function SpectrumConstant() {
   let song;
-  let fft;
   let amp;
-  let fft2;
   let maxLevel = 0;
   let drawIteration = 0;
-  let fft2Size = 128;
 
   // Controlled Variables
   let backgroundFill = true;
@@ -20,9 +17,6 @@ function SpectrumConstant() {
   let curve = true;
   let colorSelect = 0;
   let drawFreq = 1;
-  let clearCanvas = false;
-  let shouldChangeSong = false;
-  let currentSong = "fredAgain.mp3";
 
   let width = window.innerWidth;
   let height = window.innerHeight;
@@ -37,20 +31,35 @@ function SpectrumConstant() {
     ["#ffffff", "#656565", "#ffffff", "#FFFFFF"],
   ];
   const backgroundOpacityValues = [0.01, 0.02, 0.03, 0.04, 0.05, 1];
-  const fftSizes = [8, 32, 64, 128, 256];
+
+  const [sketch, setSketch] = useState();
+
+  // Unmount clean up
+  useEffect(() => {
+    return function cleanup() {
+      if (sketch) {
+        sketch.song.pause();
+      }
+    };
+  });
 
   const preload = (p5) => {
-    song = p5.loadSound(`assets/audio/${currentSong}`);
+    amp = new p5.constructor.Amplitude();
+    setSketch(
+      new SketchInstance(p5, {
+        amp: amp,
+        currentSong: "fredAgain.mp3",
+      }),
+      () => {
+        song = sketch.song;
+      }
+    );
   };
 
   const setup = (p5, canvasParentRef) => {
     p5.createCanvas(window.innerWidth, window.innerHeight).parent(
       canvasParentRef
     );
-    fft = new p5.constructor.FFT(0.8, fftSize);
-    fft2 = new p5.constructor.FFT(0.8, fft2Size);
-    amp = new p5.constructor.Amplitude();
-    song.play();
     p5.background(1);
   };
 
@@ -62,27 +71,19 @@ function SpectrumConstant() {
   };
 
   const draw = (p5) => {
-    if (clearCanvas) {
-      p5.background(1);
-      clearCanvas = false;
-    }
-
-    if (shouldChangeSong) {
-      song.pause();
-      song = p5.loadSound(`assets/audio/${currentSong}`, () => {
-        song.play();
-      });
-      shouldChangeSong = false;
+    sketch.checkOptions((newSong) => {
+      drawIteration = 0;
       maxLevel = 0;
-    }
+      p5.background(1);
+    });
 
-    let spectrum = fft.analyze();
+    let spectrum = sketch.fft.analyze();
     p5.noFill();
     if (backgroundFill) {
       p5.background(`rgba(0, 0, 0, ${backgroundOpacity})`);
     }
     if (drawIteration % drawFreq === 0) {
-      let level = amp.getLevel();
+      let level = sketch.options.amp.getLevel();
       if (level > maxLevel) {
         maxLevel = level;
       }
@@ -162,33 +163,13 @@ function SpectrumConstant() {
     opacityFill = backgroundOpacityValues[Math.floor(100 / e.target.value)];
   };
 
-  const changeFftSize = (e) => {
-    fftSize = fftSizes[e.target.value];
-  };
-
   const changeColors = (e) => {
     colorSelect = e.target.value - 1;
   };
 
-  const setClearCanvas = () => {
-    clearCanvas = true;
-  };
-
-  const pausePlaySong = () => {
-    if (song.isPlaying()) {
-      song.pause();
-    } else {
-      song.play();
-    }
-  };
-
-  const changeSong = (e) => {
-    currentSong = e.target.value;
-    shouldChangeSong = true;
-  };
-
   return (
     <>
+      <Controls sketch={sketch} />
       <Sketch
         windowResized={windowResized}
         preload={preload}
@@ -261,7 +242,6 @@ function SpectrumConstant() {
             backgroundFill = e.target.checked;
           }}
         ></input>
-        <button onClick={() => setClearCanvas()}>Clear Canvas</button>
         <button
           onClick={() => {
             maxLevel = 0;
@@ -269,12 +249,6 @@ function SpectrumConstant() {
         >
           Reset Max Level
         </button>
-        <button onClick={() => pausePlaySong()}>Play/Pause</button>
-        <select defaultValue={currentSong} onChange={(e) => changeSong(e)}>
-          {songNames.map((name) => (
-            <option value={name}>{name.substring(0, name.length - 4)}</option>
-          ))}
-        </select>
       </div>
     </>
   );

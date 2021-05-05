@@ -79,7 +79,7 @@ function WaveBeat() {
         for (let i = 0; i < waveform.length; i++) {
           let x = p5.map(i, 0, waveform.length, 0, width);
           let y = p5.map(waveform[i], -1, 1, 0, height);
-          p5.vertex(x, y);
+          p5.curveVertex(x, y);
         }
         p5.endShape();
       }
