@@ -10,6 +10,7 @@ import SpectrumArt from "library/SpectrumArt";
 import SpectrumArt2 from "library/SpectrumArt2";
 import PeakDetect from "library/PeakDetectTest";
 import CircularBeat from "library/CircularBeat";
+import Particles from "library/Particles";
 
 export default [
   {
@@ -21,6 +22,11 @@ export default [
     label: "Waveform Constant",
     path: "waveformConstant",
     component: <WaveBeatConstant />,
+  },
+  {
+    label: "Particles",
+    path: "particles",
+    component: <Particles />,
   },
   // {
   //   label: "Peak Detect",
