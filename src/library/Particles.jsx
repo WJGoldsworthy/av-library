@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Sketch from "react-p5";
 import config from "config";
 import "p5/lib/addons/p5.sound";
@@ -140,9 +140,18 @@ function Particles() {
   var speed_input = 1.5;
   var noise_input = 6;
   var num_particles = 1500;
+  let song;
+
+  // Unmount clean up
+  useEffect(() => {
+    return function cleanup() {
+      song.pause();
+    };
+  });
 
   const preload = (p5) => {
     p5.loadSound(`${config.s3Url}/audio/fredAgain.mp3`, (soundFile) => {
+      song = soundFile;
       soundFile.play();
     });
   };
@@ -194,7 +203,7 @@ function Particles() {
     var nval = ndiff / 100;
     var val = diff / 5;
 
-    var volumeNoise = Math.ceil(vol * 4);
+    var volumeNoise = Math.ceil(vol);
 
     var yoff = 0;
     for (var y = 0; y < rows; y++) {
@@ -209,7 +218,7 @@ function Particles() {
           p5.noise(
             (xoff / 2) * noise_input,
             (yoff / 2) * noise_input,
-            (zoff / 2) * noise_input
+            (zoff / 2) * noise_input * volumeNoise
           ) *
           p5.TWO_PI *
           2;
