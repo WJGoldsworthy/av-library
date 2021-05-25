@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Sketch from "react-p5";
 import config from "config";
 import "p5/lib/addons/p5.sound";
-import Controls, { SketchInstance } from "components/Controls";
 
 var song;
 var button;
@@ -136,7 +135,6 @@ function Particle(p5) {
 
 function Particles() {
   // Initialise Variables
-  const [sketch, setSketch] = useState({});
 
   // Control for visualiser variables
   var speed_input = 1.5;
@@ -146,28 +144,16 @@ function Particles() {
 
   // Unmount clean up
   useEffect(() => {
-    // Something
     return function cleanup() {
-      if (sketch.isLoaded && sketch.song) {
-        sketch.song.pause();
-        particles = [];
-      }
+      song.pause();
     };
   });
 
   const preload = (p5) => {
-    // p5.loadSound(`${config.s3Url}/audio/fredAgain.mp3`, (soundFile) => {
-    //   song = soundFile;
-    //   soundFile.play();
-    // });
-    amp = new p5.constructor.Amplitude();
-    setSketch(
-      new SketchInstance(p5, { currentSong: "fredAgain", amp: amp }),
-      () => {
-        song = sketch.song;
-        return;
-      }
-    );
+    p5.loadSound(`${config.s3Url}/audio/fredAgain.mp3`, (soundFile) => {
+      song = soundFile;
+      soundFile.play();
+    });
   };
 
   const setup = (p5, canvasParentRef) => {
@@ -199,9 +185,6 @@ function Particles() {
   };
 
   const draw = (p5) => {
-    sketch.checkOptions((newSong) => {
-      p5.background(1);
-    });
     perlin(p5);
   };
 
@@ -212,7 +195,7 @@ function Particles() {
   function perlin(p5) {
     p5.background(10, 20);
 
-    var vol = sketch.options.amp.getLevel();
+    var vol = amp.getLevel();
 
     var diff = Math.abs(vol - prevol);
 
@@ -304,15 +287,12 @@ function Particles() {
   };
 
   return (
-    <>
-      <Sketch
-        windowResized={windowResized}
-        preload={preload}
-        setup={setup}
-        draw={draw}
-      />
-      <Controls sketch={sketch} />
-    </>
+    <Sketch
+      windowResized={windowResized}
+      preload={preload}
+      setup={setup}
+      draw={draw}
+    />
   );
 }
 

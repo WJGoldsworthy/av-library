@@ -10,6 +10,7 @@ import SpectrumArt from "library/SpectrumArt";
 import SpectrumArt2 from "library/SpectrumArt2";
 import PeakDetect from "library/PeakDetectTest";
 import CircularBeat from "library/CircularBeat";
+import ParticlesOld from "library/ParticlesOld";
 import Particles from "library/Particles";
 
 export default [
