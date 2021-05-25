@@ -19,6 +19,7 @@ var zoff = 0;
 var particles = [];
 var flowfield;
 var sector_length = 100;
+let shouldReset = false;
 
 // Custom particles for use in visualiser
 function Particle(p5) {
@@ -202,6 +203,13 @@ function Particles() {
     sketch.checkOptions((newSong) => {
       p5.background(1);
     });
+    if (shouldReset) {
+      particles = [];
+      for (var i = 0; i < num_particles; i++) {
+        particles[i] = new Particle(p5);
+      }
+      shouldReset = false;
+    }
     perlin(p5);
   };
 
@@ -303,6 +311,10 @@ function Particles() {
     p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
   };
 
+  const resetParticles = () => {
+    shouldReset = true;
+  };
+
   return (
     <>
       <Sketch
@@ -312,6 +324,11 @@ function Particles() {
         draw={draw}
       />
       <Controls sketch={sketch} />
+      <div className="variable-controls">
+        <div className="variable-controls-container">
+          <p onClick={() => resetParticles()}>Reset particles</p>
+        </div>
+      </div>
     </>
   );
 }
