@@ -8,6 +8,7 @@
   display: grid;
   align-items: center;
   justify-content: center;
+  z-index: 5;
 }
 
 .c-controls-container {
@@ -20,6 +21,71 @@
   & p {
     margin: 0;
   }
+}
+
+.c-controls-song-select {
+  position: absolute;
+  right: 20px;
+  margin-top: 3px;
+}
+
+.c-controls-select-modal {
+  position: fixed;
+  top: 80px;
+  width: 267px;
+  left: calc(50vw - 133px);
+  height: calc(100vh - 150px - 100px);
+
+  &__background {
+    height: 100%;
+    width: 100%;
+    background-color: #1b1b1b;
+    opacity: 0.8;
+  }
+
+  &__content {
+    position: absolute;
+    margin-top: 40px;
+    top: 0;
+    width: 100%;
+    text-align: center;
+    color: white;
+    height: calc(100% - 40px);
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+
+    & p:hover {
+      font-weight: bold;
+      cursor: pointer;
+    }
+  }
+
+  &__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #1b1b1b;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: white;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: white;
 }
 
 .c-controls-buttons {

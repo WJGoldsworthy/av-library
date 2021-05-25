@@ -7,10 +7,13 @@ import { ReactComponent as Pause } from "../../assets/images/pause.svg";
 import { ReactComponent as Previous } from "../../assets/images/before.svg";
 import { ReactComponent as Next } from "../../assets/images/next.svg";
 import { ReactComponent as Stop } from "../../assets/images/stop.svg";
+import { ReactComponent as Playlist } from "../../assets/images/playlist.svg";
+import { ReactComponent as Close } from "../../assets/images/closeMenu.svg";
 
 const Controls = ({ song, selectColors, sketch }) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentSong, setCurrentSong] = useState();
+  const [openSelect, setOpenSelect] = useState(false);
 
   const pausePlaySong = () => {
     if (sketch.song.isPlaying()) {
@@ -47,15 +50,14 @@ const Controls = ({ song, selectColors, sketch }) => {
     setCurrentSong(newSong);
   };
 
+  const selectSong = (song) => {
+    sketch.changeSong(song);
+    setCurrentSong(song);
+    setOpenSelect(false);
+  };
+
   return (
     <div className="c-controls">
-      {/* <button onClick={() => clearCanvas()}>Clear Canvas</button>
-      <button onClick={() => pausePlaySong()}>Play/Pause</button>
-      <select defaultValue={currentSong} onChange={(e) => changeSong(e)}>
-        {songNames.map((name) => (
-          <option value={name}>{name.substring(0, name.length - 4)}</option>
-        ))}
-      </select> */}
       <div className="c-controls-container">
         <p>{currentSong ? currentSong : sketch.currentSong}</p>
         <div className="c-controls-buttons">
@@ -77,6 +79,23 @@ const Controls = ({ song, selectColors, sketch }) => {
           <Next onClick={() => nextSong()} />
         </div>
       </div>
+      <div className="c-controls-song-select">
+        <Playlist onClick={() => setOpenSelect(!openSelect)} />
+      </div>
+      {openSelect && (
+        <div className="c-controls-select-modal">
+          <div className="c-controls-select-modal__background"></div>
+          <Close
+            className="c-controls-select-modal__close"
+            onClick={() => setOpenSelect(false)}
+          />
+          <div className="c-controls-select-modal__content">
+            {songNames.map((name) => (
+              <p onClick={() => selectSong(name)}>{name}</p>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
