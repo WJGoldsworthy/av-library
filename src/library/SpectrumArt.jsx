@@ -9,7 +9,7 @@ function SpectrumArt() {
   let amp;
   let maxLevel = 0;
   let drawIteration = 0;
-  const [sketch, setSketch] = useState();
+  const [sketch, setSketch] = useState({});
 
   // Controlled Variables
   let opacityFill = 1; // 0.04 1
@@ -41,7 +41,7 @@ function SpectrumArt() {
   useEffect(() => {
     // Something
     return function cleanup() {
-      if (sketch && sketch.song) {
+      if (sketch.isLoaded && sketch.song) {
         sketch.song.pause();
       }
     };

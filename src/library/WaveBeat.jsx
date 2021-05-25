@@ -14,7 +14,7 @@ function WaveBeat() {
   let fft2;
   let drawFreq = 64;
   let numLines = 2;
-  const [sketch, setSketch] = useState();
+  const [sketch, setSketch] = useState({});
 
   const width = window.innerWidth;
   const height = window.innerHeight;
@@ -29,7 +29,7 @@ function WaveBeat() {
   // Unmount clean up
   useEffect(() => {
     return function cleanup() {
-      if (sketch) {
+      if (sketch.isLoaded && sketch.song) {
         sketch.song.pause();
       }
     };
@@ -42,13 +42,14 @@ function WaveBeat() {
     trends = Array.apply(null, Array(fftSize)).map(() => 0);
     setSketch(
       new SketchInstance(p5, {
-        currentSong: "BlueBoss.mp3",
+        currentSong: "BlueBoss",
         fft2: fft2,
         fft0: fft0,
         trends: trends,
       }),
       () => {
         song = sketch.song;
+        return;
       }
     );
   };

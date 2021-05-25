@@ -1,16 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import sketches from "data/sketches";
+import { ReactComponent as Menu } from "../../assets/images/menu.svg";
+import { ReactComponent as Close } from "../../assets/images/closeMenu.svg";
 import "./styles.scss";
 
 const Navigation = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <nav className="c-navigation">
-      {sketches.map((sketch) => (
-        <div className="c-nav-item">
-          <Link to={`/${sketch.path}`}>{sketch.label}</Link>
+      <Menu onClick={() => setIsOpen(!isOpen)} />
+      {isOpen && (
+        <div className="menu-open">
+          <Close onClick={() => setIsOpen(!isOpen)} />
+          {sketches.map((sketch) => (
+            <Link to={`/${sketch.path}`}>
+              <div onClick={() => setIsOpen(!isOpen)} className="c-nav-item">
+                {sketch.label}
+              </div>
+            </Link>
+          ))}
         </div>
-      ))}
+      )}
     </nav>
   );
 };

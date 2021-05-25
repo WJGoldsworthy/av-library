@@ -282,7 +282,18 @@ function Particles() {
     }
   }
 
-  return <Sketch preload={preload} setup={setup} draw={draw} />;
+  const windowResized = (p5) => {
+    p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
+  };
+
+  return (
+    <Sketch
+      windowResized={windowResized}
+      preload={preload}
+      setup={setup}
+      draw={draw}
+    />
+  );
 }
 
 export default Particles;

@@ -1,4 +1,64 @@
 .c-controls {
-  position: absolute;
+  position: fixed;
   bottom: 0px;
+  height: 100px;
+  width: 100%;
+  left: 0;
+  background-color: #1b1b1b;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+}
+
+.c-controls-container {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+
+  & p {
+    margin: 0;
+  }
+}
+
+.c-controls-buttons {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+
+  & svg {
+    margin-top: 5px;
+    padding: 6px;
+  }
+}
+
+.variable-controls {
+  position: fixed;
+  right: 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  top: 0px;
+  height: 100%;
+}
+
+.variable-controls-container {
+  font-size: 12px;
+  color: white;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  background-color: #1b1b1b;
+  backdrop-filter: blur(9px);
+  border-radius: 3px;
+
+  & label {
+    margin-bottom: 10px;
+  }
+
+  & input {
+    margin-bottom: 30px;
+  }
 }

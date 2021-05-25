@@ -9,7 +9,7 @@ function RectangleArt() {
   let trends; // 1 for increasing trend, 0 for equal or decreasing
   let fftSize = 16;
   let opacityFill = 0.05;
-  const [sketch, setSketch] = useState();
+  const [sketch, setSketch] = useState({});
 
   const width = window.innerWidth;
   const colors = ["#ff2328", "#ead2d7", "#bd6bd7", "#1d1564"];
@@ -17,7 +17,7 @@ function RectangleArt() {
   // Unmount clean up
   useEffect(() => {
     return function cleanup() {
-      if (sketch) {
+      if (sketch.isLoaded && sketch.song) {
         sketch.song.pause();
       }
     };
@@ -28,7 +28,7 @@ function RectangleArt() {
     trends = Array.apply(null, Array(fftSize)).map(() => 0);
     setSketch(
       new SketchInstance(p5, {
-        currentSong: "saku.mp3",
+        currentSong: "saku",
         fftSize: 16,
         fft0: fft0,
         trends: trends,

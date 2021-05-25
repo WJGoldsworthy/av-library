@@ -11,7 +11,7 @@ function WaveBeatConstant() {
   let colorSelect = 2;
   let fft2;
   let drawFreq = 128;
-  const [sketch, setSketch] = useState();
+  const [sketch, setSketch] = useState({});
 
   const width = window.innerWidth;
   const height = window.innerHeight;
@@ -26,7 +26,7 @@ function WaveBeatConstant() {
   // Unmount clean up
   useEffect(() => {
     return function cleanup() {
-      if (sketch) {
+      if (sketch.isLoaded && sketch.song) {
         sketch.song.pause();
       }
     };
@@ -39,7 +39,7 @@ function WaveBeatConstant() {
       new SketchInstance(p5, {
         amp: amp,
         fft2: fft2,
-        currentSong: "BeginByLettingGo.mp3",
+        currentSong: "BeginByLettingGo",
       }),
       () => {
         song = sketch.song;

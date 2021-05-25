@@ -32,12 +32,13 @@ function SpectrumConstant() {
   ];
   const backgroundOpacityValues = [0.01, 0.02, 0.03, 0.04, 0.05, 1];
 
-  const [sketch, setSketch] = useState();
+  const [sketch, setSketch] = useState({});
+  let currentSong = "fredAgain";
 
   // Unmount clean up
   useEffect(() => {
     return function cleanup() {
-      if (sketch) {
+      if (sketch.isLoaded && sketch.song) {
         sketch.song.pause();
       }
     };
@@ -48,10 +49,11 @@ function SpectrumConstant() {
     setSketch(
       new SketchInstance(p5, {
         amp: amp,
-        currentSong: "fredAgain.mp3",
+        currentSong: currentSong,
       }),
       () => {
         song = sketch.song;
+        return;
       }
     );
   };
@@ -176,79 +178,70 @@ function SpectrumConstant() {
         setup={setup}
         draw={draw}
       />
-      <div
-        style={{
-          position: "fixed",
-          top: "30px",
-          right: "10px",
-          display: "grid",
-          fontSize: "10px",
-          color: "white",
-          gridGap: "5px",
-        }}
-        className="controls"
-      >
-        <label for="background-opacity">Background</label>
-        <input
-          id="background-opacity"
-          name="background-opacity"
-          type="range"
-          max="100"
-          min="0"
-          defaultValue="40"
-          step="20"
-          onChange={(e) => changeBackgroundOpacity(e)}
-        ></input>
-        <label for="line-opacity">Line Opacity</label>
-        <input
-          id="line-opacity"
-          name="line-opacity"
-          type="range"
-          max="100"
-          min="0"
-          defaultValue="40"
-          step="20"
-          onChange={(e) => changeLineOpacity(e)}
-        ></input>
-        <label>Line Colors</label>
-        <input
-          id="line-colors"
-          name="line-colors"
-          type="range"
-          max={colors.length}
-          min="1"
-          defaultValue="1"
-          step="1"
-          onChange={(e) => changeColors(e)}
-        ></input>
-        <label>Draw Frequency</label>
-        <input
-          id="draw-freq"
-          name="draw-freq"
-          type="range"
-          max="6"
-          min="1"
-          defaultValue="1"
-          step="1"
-          onChange={(e) => {
-            drawFreq = e.target.value;
-          }}
-        ></input>
-        <label for="backgroundFill">Fill Background</label>
-        <input
-          type="checkbox"
-          defaultChecked={true}
-          onChange={(e) => {
-            backgroundFill = e.target.checked;
-          }}
-        ></input>
-        <button
-          onClick={() => {
-            maxLevel = 0;
-          }}
-        >
-          Reset Max Level
-        </button>
+      <div className="variable-controls">
+        <div className="variable-controls-container">
+          <label for="background-opacity">Background</label>
+          <input
+            id="background-opacity"
+            name="background-opacity"
+            type="range"
+            max="100"
+            min="0"
+            defaultValue="40"
+            step="20"
+            onChange={(e) => changeBackgroundOpacity(e)}
+          ></input>
+          <label for="line-opacity">Line Opacity</label>
+          <input
+            id="line-opacity"
+            name="line-opacity"
+            type="range"
+            max="100"
+            min="0"
+            defaultValue="40"
+            step="20"
+            onChange={(e) => changeLineOpacity(e)}
+          ></input>
+          <label>Line Colors</label>
+          <input
+            id="line-colors"
+            name="line-colors"
+            type="range"
+            max={colors.length}
+            min="1"
+            defaultValue="1"
+            step="1"
+            onChange={(e) => changeColors(e)}
+          ></input>
+          <label>Draw Frequency</label>
+          <input
+            id="draw-freq"
+            name="draw-freq"
+            type="range"
+            max="6"
+            min="1"
+            defaultValue="1"
+            step="1"
+            onChange={(e) => {
+              drawFreq = e.target.value;
+            }}
+          ></input>
+          <label for="backgroundFill">Fill Background</label>
+          <input
+            type="checkbox"
+            defaultChecked={true}
+            onChange={(e) => {
+              backgroundFill = e.target.checked;
+            }}
+          ></input>
+          <p
+            onClick={() => {
+              maxLevel = 0;
+            }}
+          >
+            Reset Max Level
+          </p>
+        </div>
       </div>
     </>
   );

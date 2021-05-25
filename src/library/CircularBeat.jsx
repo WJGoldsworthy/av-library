@@ -2,7 +2,6 @@ import "p5/lib/addons/p5.sound";
 import React, { useEffect, useState } from "react";
 import Sketch from "react-p5";
 import Controls, { SketchInstance } from "components/Controls";
-import { matchPath } from "react-router";
 
 // TODO: Match beat to radial circle?
 let particles = [];
@@ -48,7 +47,7 @@ function randomColor(colors) {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-const VariableControls = ({ p5, noise }) => {
+const VariableControls = ({ p5, noise, sketch }) => {
   const changeVelocity = (e) => {
     velocity = parseInt(e.target.value) / 200;
     particles.forEach((particle) => {
@@ -92,62 +91,60 @@ const VariableControls = ({ p5, noise }) => {
     }
   };
 
+  const clearCanvas = () => {
+    sketch.clearCanvas();
+  };
+
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: "30px",
-        right: "10px",
-        display: "grid",
-        fontSize: "10px",
-        color: "white",
-      }}
-    >
-      <label>Velocity</label>
-      <input
-        type="range"
-        max="10"
-        min="1"
-        step="1"
-        defaultValue="2"
-        onChange={(e) => changeVelocity(e)}
-      />
-      <label>Opacity</label>
-      <input
-        type="range"
-        max="1"
-        min="0"
-        step="0.1"
-        defaultValue="0.2"
-        onChange={(e) => changeOpacity(e)}
-      />
-      <label>Low Distance</label>
-      <input
-        type="range"
-        max="200"
-        min="1"
-        step="1"
-        defaultValue="1"
-        onChange={(e) => changeLowerDistance(e)}
-      />
-      <label>High Distance</label>
-      <input
-        type="range"
-        max="300"
-        min="50"
-        step="1"
-        defaultValue="100"
-        onChange={(e) => changeHighDistance(e)}
-      />
-      <label>Particles</label>
-      <input
-        type="range"
-        max="60"
-        min="10"
-        step="1"
-        defaultValue="40"
-        onChange={(e) => changeParticles(e)}
-      />
+    <div className="variable-controls">
+      <div className="variable-controls-container">
+        <label>Velocity</label>
+        <input
+          type="range"
+          max="10"
+          min="1"
+          step="1"
+          defaultValue="2"
+          onChange={(e) => changeVelocity(e)}
+        />
+        <label>Opacity</label>
+        <input
+          type="range"
+          max="1"
+          min="0"
+          step="0.1"
+          defaultValue="0.2"
+          onChange={(e) => changeOpacity(e)}
+        />
+        <label>Low Distance</label>
+        <input
+          type="range"
+          max="200"
+          min="1"
+          step="1"
+          defaultValue="1"
+          onChange={(e) => changeLowerDistance(e)}
+        />
+        <label>High Distance</label>
+        <input
+          type="range"
+          max="300"
+          min="50"
+          step="1"
+          defaultValue="100"
+          onChange={(e) => changeHighDistance(e)}
+        />
+        <label>Particles</label>
+        <input
+          type="range"
+          max="60"
+          min="10"
+          step="1"
+          defaultValue="40"
+          onChange={(e) => changeParticles(e)}
+        />
+        <p onClick={() => clearCanvas()}>Clear Canvas</p>
+      </div>
     </div>
   );
 };
@@ -155,6 +152,7 @@ const VariableControls = ({ p5, noise }) => {
 function CircularBeat() {
   // Variables
   let song;
+  let currentSong = "apricots";
 
   // Sketch
   const [sketch, setSketch] = useState({});
@@ -171,7 +169,7 @@ function CircularBeat() {
   });
 
   const preload = (p5) => {
-    setSketch(new SketchInstance(p5, { currentSong: "apricots.mp3" }), () => {
+    setSketch(new SketchInstance(p5, { currentSong: currentSong }), () => {
       song = sketch.song;
       return;
     });
@@ -212,10 +210,19 @@ function CircularBeat() {
     }
   };
 
+  const windowResized = (p5) => {
+    p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
+  };
+
   return (
     <>
-      <Sketch preload={preload} setup={setup} draw={draw} />
-      <VariableControls velocity={velocity} />
+      <Sketch
+        windowResized={windowResized}
+        preload={preload}
+        setup={setup}
+        draw={draw}
+      />
+      <VariableControls sketch={sketch} velocity={velocity} />
       <Controls sketch={sketch} />
     </>
   );
