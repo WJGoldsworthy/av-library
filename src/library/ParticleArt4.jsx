@@ -69,17 +69,19 @@ export function Particle(p5) {
 
   this.maxV = 0;
 
-  this.show = function (v) {
-    const r =
-      Math.min(orange[0], blue[0]) +
-      Math.abs(Math.cos(v)) * Math.max(orange[0], blue[0]);
-    const g =
-      Math.min(orange[1], blue[1]) +
-      Math.abs(Math.cos(v)) * Math.max(orange[1], blue[1]);
-    const b =
-      Math.min(orange[2], blue[2]) +
-      Math.abs(Math.sin(v)) * Math.max(orange[2], blue[2]);
-    p5.stroke(r, g, b);
+  this.show = function (v, vol) {
+    // const r =
+    //   Math.min(orange[0], blue[0]) +
+    //   Math.abs(Math.cos(v)) * Math.max(orange[0], blue[0]);
+    // const g =
+    //   Math.min(orange[1], blue[1]) +
+    //   Math.abs(Math.cos(v)) * Math.max(orange[1], blue[1]);
+    // const b =
+    //   Math.min(orange[2], blue[2]) +
+    //   Math.abs(Math.sin(v)) * Math.max(orange[2], blue[2]);
+    // p5.stroke(`rgba(${r}, ${g}, ${b}, 0.05)`);
+    // p5.stroke(r, g, b);
+
     p5.strokeWeight(2);
     p5.line(this.pos.x, this.pos.y, this.prevPos.x, this.prevPos.y);
     this.updatePrev();
@@ -110,7 +112,7 @@ export function Particle(p5) {
   };
 
   this.draw = function () {
-    p5.background(0);
+    // p5.background(0);
     this.dragSegment(0, this.pos.x, this.pos.y);
     for (var i = 0; i < this.x.length - 1; i++) {
       this.dragSegment(i + 1, this.x[i], this.y[i]);
@@ -135,15 +137,32 @@ export function Particle(p5) {
   };
 }
 
-function Particles() {
+function ParticlesArt() {
   // Initialise Variables
   const [sketch, setSketch] = useState({});
 
   // Control for visualiser variables
   var speed_input = 1.5;
   var noise_input = 6;
-  var num_particles = 1500;
+  var num_particles = 300;
   let song;
+  let maxCentroid = 1;
+  let minCentroid = 0;
+  let recentMin = 0;
+
+  // Red Ribbon
+  //   const orange = [237, 51, 18];
+  //   const blue = [44, 81, 201];
+
+  const orange = [250, 199, 72];
+  const blue = [248, 141, 173];
+
+  let colors = [
+    [94, 87, 104],
+    [236, 54, 141],
+    [68, 3, 129],
+    [255, 165, 165],
+  ];
 
   // Unmount clean up
   useEffect(() => {
@@ -159,7 +178,11 @@ function Particles() {
   const preload = (p5) => {
     amp = new p5.constructor.Amplitude();
     setSketch(
-      new SketchInstance(p5, { currentSong: "fredAgain", amp: amp }),
+      new SketchInstance(p5, {
+        currentSong: "fredAgain",
+        amp: amp,
+        fftSize: 1024,
+      }),
       () => {
         song = sketch.song;
         return;
@@ -193,11 +216,13 @@ function Particles() {
     if (width > 1300) {
       prespeed = 5;
     }
+    // p5.blendMode(p5.SOFT_LIGHT);
   };
 
   const draw = (p5) => {
     sketch.checkOptions((newSong) => {
-      p5.background(1);
+      p5.background(0);
+      shouldReset = true;
     });
     if (shouldReset) {
       particles = [];
@@ -214,7 +239,7 @@ function Particles() {
 
   // Function for initialising and controlling perlin noise field
   function perlin(p5) {
-    p5.background(10, 20);
+    // p5.background(10, 20);
 
     var vol = sketch.options.amp.getLevel();
 
@@ -265,14 +290,56 @@ function Particles() {
     }
 
     // Update particle speed based on audio volume
-    var speed = speed_input + vol * 55; //55
-    p5.stroke(255);
+    var speed = speed_input + vol * 10; //55
+    // p5.stroke(255);
+    // const r = Math.round(
+    //   Math.min(orange[0], blue[0]) +
+    //     Math.abs(Math.cos(speed)) * Math.max(orange[0], blue[0])
+    // );
+    // const g = Math.round(
+    //   Math.min(orange[1], blue[1]) +
+    //     Math.abs(Math.cos(speed)) * Math.max(orange[1], blue[1])
+    // );
+    // const b = Math.round(
+    //   Math.min(orange[2], blue[2]) +
+    //     Math.abs(Math.sin(speed)) * Math.max(orange[2], blue[2])
+    // );
+    // p5.stroke(`rgba(${r}, ${g}, ${b}, ${vol / 4})`);
+    sketch.fft.analyze();
+    let centroid = sketch.fft.getCentroid();
+    if (centroid > maxCentroid) {
+      maxCentroid = centroid;
+    }
+
+    if (count == 500) {
+      count = 0;
+      minCentroid = recentMin;
+      recentMin = centroid;
+      console.log("reset");
+    } else {
+      if (centroid < recentMin) {
+        recentMin = centroid;
+      }
+      count++;
+    }
+
+    if (centroid < minCentroid) {
+      minCentroid = centroid;
+    }
+
+    let pick = Math.floor(p5.map(centroid, minCentroid, maxCentroid, 0, 3));
+
+    p5.stroke(
+      `rgba(${colors[pick][0]}, ${colors[pick][1]}, ${colors[pick][2]}, ${
+        vol / 4
+      })`
+    );
 
     for (var i = 0; i < particles.length; i++) {
       particles[i].follow(flowfield);
       particles[i].update(speed);
       particles[i].edges();
-      particles[i].show(speed);
+      particles[i].show(speed, vol);
     }
 
     // Control for continually adding and removing particles to maintain variation in effect
@@ -294,13 +361,13 @@ function Particles() {
       }
     }
 
-    if (count == 30) {
-      particles.shift();
-      particles.push(new Particle(p5));
-      count = 0;
-    } else {
-      count++;
-    }
+    // if (count == 30) {
+    //   particles.shift();
+    //   particles.push(new Particle(p5));
+    //   count = 0;
+    // } else {
+    //   count++;
+    // }
   }
 
   const windowResized = (p5) => {
@@ -320,13 +387,8 @@ function Particles() {
         draw={draw}
       />
       <Controls sketch={sketch} />
-      <div className="variable-controls">
-        <div className="variable-controls-container">
-          <p onClick={() => resetParticles()}>Reset particles</p>
-        </div>
-      </div>
     </>
   );
 }
 
-export default Particles;
+export default ParticlesArt;

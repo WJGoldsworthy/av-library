@@ -21,8 +21,10 @@ let colors = [
   ["#fdfc6e", "#07dfe3", "#fdf7f7", "#FFFFFF"],
   ["#fd4339", "#4f32c8", "#edddde", "#FFFFFF"],
 ];
+let colorPick = 5;
 let height = window.innerHeight;
 let width = window.innerWidth;
+let currentTime = 0;
 
 var hexToRgbA = function (hex) {
   var c;
@@ -47,7 +49,7 @@ function randomColor(colors) {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-const VariableControls = ({ p5, noise, sketch }) => {
+const VariableControls = ({ p5, sketch }) => {
   const changeVelocity = (e) => {
     velocity = parseInt(e.target.value) / 200;
     particles.forEach((particle) => {
@@ -84,11 +86,24 @@ const VariableControls = ({ p5, noise, sketch }) => {
           width / 2,
           height / 2,
           radius,
-          randomColor(colors[5]),
+          randomColor(colors[colorPick]),
           velocity
         )
       );
     }
+  };
+
+  const changeNoise = (e) => {
+    var newNoise = parseInt(e.target.value);
+    noise = newNoise;
+  };
+
+  const changeColors = (e) => {
+    var newColor = parseInt(e.target.value);
+    colorPick = newColor;
+    particles.forEach((particle) => {
+      particle.updateColor(randomColor(colors[colorPick]));
+    });
   };
 
   const clearCanvas = () => {
@@ -116,6 +131,15 @@ const VariableControls = ({ p5, noise, sketch }) => {
           defaultValue="0.2"
           onChange={(e) => changeOpacity(e)}
         />
+        <label>Colors</label>
+        <input
+          type="range"
+          max={colors.length}
+          min="0"
+          step="1"
+          defaultValue="5"
+          onChange={(e) => changeColors(e)}
+        />
         <label>Low Distance</label>
         <input
           type="range"
@@ -133,6 +157,15 @@ const VariableControls = ({ p5, noise, sketch }) => {
           step="1"
           defaultValue="100"
           onChange={(e) => changeHighDistance(e)}
+        />
+        <label>Noise</label>
+        <input
+          type="range"
+          max="5"
+          min="1"
+          step="1"
+          defaultValue="2"
+          onChange={(e) => changeNoise(e)}
         />
         <label>Particles</label>
         <input
@@ -188,7 +221,7 @@ function CircularBeat() {
           window.innerWidth / 2,
           window.innerHeight / 2,
           radius,
-          randomColor(colors[5]),
+          randomColor(colors[colorPick]),
           velocity,
           noise
         )
@@ -200,6 +233,10 @@ function CircularBeat() {
     sketch.checkOptions((newSong) => {
       p5.background(1);
     });
+    if (sketch.song.currentTime() !== currentTime) {
+      currentTime = sketch.song.currentTime();
+    }
+
     let spectrum = sketch.fft.analyze();
     var i = 0;
     if (particles.length === numParticles) {
@@ -223,7 +260,7 @@ function CircularBeat() {
         draw={draw}
       />
       <VariableControls sketch={sketch} velocity={velocity} />
-      <Controls sketch={sketch} />
+      <Controls currentTime={currentTime} sketch={sketch} />
     </>
   );
 }
@@ -236,7 +273,7 @@ function Particle(x, y, radius, color, velocity) {
   this.radians = Math.random() * Math.PI * 2;
   var plusOrMinus = Math.random() < 0.5 ? -1 : 1;
   var slowEfficient = 0.25;
-  this.velocity = Math.random() * velocity * plusOrMinus * slowEfficient;
+  this.velocity = Math.random() * velocity * slowEfficient;
   this.initialDistance = randomIntFromRange(distanceRange[0], distanceRange[1]);
 
   this.updateInitialDistance = () => {
@@ -244,6 +281,10 @@ function Particle(x, y, radius, color, velocity) {
       distanceRange[0],
       distanceRange[1]
     );
+  };
+
+  this.updateColor = (newColor) => {
+    this.color = newColor;
   };
 
   this.updateVelocity = function (newVelocity) {

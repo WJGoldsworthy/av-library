@@ -10,7 +10,7 @@ import { ReactComponent as Stop } from "../../assets/images/stop.svg";
 import { ReactComponent as Playlist } from "../../assets/images/playlist.svg";
 import { ReactComponent as Close } from "../../assets/images/closeMenu.svg";
 
-const Controls = ({ song, selectColors, sketch }) => {
+const Controls = ({ song, selectColors, sketch, currentTime }) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentSong, setCurrentSong] = useState();
   const [openSelect, setOpenSelect] = useState(false);
@@ -77,6 +77,7 @@ const Controls = ({ song, selectColors, sketch }) => {
           )}
           <Stop onClick={() => pausePlaySong()} />
           <Next onClick={() => nextSong()} />
+          {currentTime}
         </div>
       </div>
       <div className="c-controls-song-select">
@@ -115,17 +116,25 @@ export class SketchInstance {
       () => {
         this.song.play();
         this.isLoaded = true;
+        if (options.callback) {
+          options.callback(p5);
+        }
       }
     );
     this.shouldChangeSong = false;
     this.currentSong = options?.currentSong ? options.currentSong : "apricots";
     this.changeSong = this.changeSong.bind(this);
     this.clearCanvas = this.clearCanvas.bind(this);
+    this.setAmp = this.setAmp.bind(this);
     this.options = options;
   }
 
   setOptions = (options) => {
     this.options = options;
+  };
+
+  setAmp = () => {
+    this.amp = new this.p5.constructor.Amplitude();
   };
 
   changeSong = (newSong) => {

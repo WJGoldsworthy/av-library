@@ -6,3 +6,16 @@
   width: 100vw;
   overflow: hidden;
 }
+
+.landing-header {
+  display: flex;
+  font-size: 150px;
+  margin: 0;
+  color: white;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  position: absolute;
+  top: calc(50% - 75px);
+  font-family: none;
+}

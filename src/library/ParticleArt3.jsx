@@ -20,11 +20,15 @@ var particles = [];
 var flowfield;
 var sector_length = 100;
 let shouldReset = false;
+let startingDensity = 10;
 
 // Custom particles for use in visualiser
 export function Particle(p5) {
   // Initialise variables
-  this.pos = p5.createVector(p5.random(width), p5.random(height));
+  this.pos = p5.createVector(
+    p5.random(width / startingDensity),
+    p5.random(height / startingDensity)
+  );
   this.vel = p5.constructor.Vector.random2D();
   this.acc = p5.createVector(0, 0);
   this.maxspeed = 10;
@@ -69,17 +73,19 @@ export function Particle(p5) {
 
   this.maxV = 0;
 
-  this.show = function (v) {
-    const r =
-      Math.min(orange[0], blue[0]) +
-      Math.abs(Math.cos(v)) * Math.max(orange[0], blue[0]);
-    const g =
-      Math.min(orange[1], blue[1]) +
-      Math.abs(Math.cos(v)) * Math.max(orange[1], blue[1]);
-    const b =
-      Math.min(orange[2], blue[2]) +
-      Math.abs(Math.sin(v)) * Math.max(orange[2], blue[2]);
-    p5.stroke(r, g, b);
+  this.show = function (v, vol) {
+    // const r =
+    //   Math.min(orange[0], blue[0]) +
+    //   Math.abs(Math.cos(v)) * Math.max(orange[0], blue[0]);
+    // const g =
+    //   Math.min(orange[1], blue[1]) +
+    //   Math.abs(Math.cos(v)) * Math.max(orange[1], blue[1]);
+    // const b =
+    //   Math.min(orange[2], blue[2]) +
+    //   Math.abs(Math.sin(v)) * Math.max(orange[2], blue[2]);
+    // p5.stroke(`rgba(${r}, ${g}, ${b}, 0.05)`);
+    // p5.stroke(r, g, b);
+
     p5.strokeWeight(2);
     p5.line(this.pos.x, this.pos.y, this.prevPos.x, this.prevPos.y);
     this.updatePrev();
@@ -110,7 +116,7 @@ export function Particle(p5) {
   };
 
   this.draw = function () {
-    p5.background(0);
+    // p5.background(0);
     this.dragSegment(0, this.pos.x, this.pos.y);
     for (var i = 0; i < this.x.length - 1; i++) {
       this.dragSegment(i + 1, this.x[i], this.y[i]);
@@ -135,15 +141,22 @@ export function Particle(p5) {
   };
 }
 
-function Particles() {
+function ParticlesArt() {
   // Initialise Variables
   const [sketch, setSketch] = useState({});
 
   // Control for visualiser variables
   var speed_input = 1.5;
   var noise_input = 6;
-  var num_particles = 1500;
+  var num_particles = 300;
   let song;
+
+  // Red Ribbon
+  const orange = [237, 51, 18];
+  const blue = [44, 81, 201];
+
+  //   const orange = [250, 199, 72];
+  //   const blue = [248, 141, 173];
 
   // Unmount clean up
   useEffect(() => {
@@ -193,11 +206,13 @@ function Particles() {
     if (width > 1300) {
       prespeed = 5;
     }
+    // p5.blendMode(p5.SOFT_LIGHT);
   };
 
   const draw = (p5) => {
     sketch.checkOptions((newSong) => {
-      p5.background(1);
+      p5.background(0);
+      shouldReset = true;
     });
     if (shouldReset) {
       particles = [];
@@ -214,7 +229,7 @@ function Particles() {
 
   // Function for initialising and controlling perlin noise field
   function perlin(p5) {
-    p5.background(10, 20);
+    // p5.background(10, 20);
 
     var vol = sketch.options.amp.getLevel();
 
@@ -265,14 +280,56 @@ function Particles() {
     }
 
     // Update particle speed based on audio volume
-    var speed = speed_input + vol * 55; //55
-    p5.stroke(255);
+    var speed = speed_input + vol * 10; //55
+    // p5.stroke(255);
+    // const r = Math.round(
+    //   Math.min(orange[0], blue[0]) +
+    //     Math.abs(Math.cos(speed)) * Math.max(orange[0], blue[0])
+    // );
+    // const g = Math.round(
+    //   Math.min(orange[1], blue[1]) +
+    //     Math.abs(Math.cos(speed)) * Math.max(orange[1], blue[1])
+    // );
+    // const b = Math.round(
+    //   Math.min(orange[2], blue[2]) +
+    //     Math.abs(Math.sin(speed)) * Math.max(orange[2], blue[2])
+    // );
+    // p5.stroke(`rgba(${r}, ${g}, ${b}, ${vol / 4})`);
+
+    let red = Math.round(
+      p5.map(
+        vol,
+        0,
+        1,
+        Math.min(orange[0], blue[0]),
+        Math.max(orange[0], blue[0])
+      )
+    );
+    let green = Math.round(
+      p5.map(
+        vol,
+        0,
+        1,
+        Math.min(orange[1], blue[1]),
+        Math.max(orange[1], blue[1])
+      )
+    );
+    let blue2 = Math.round(
+      p5.map(
+        vol,
+        0,
+        1,
+        Math.min(orange[2], blue[2]),
+        Math.max(orange[2], blue[2])
+      )
+    );
+    p5.stroke(`rgba(${red}, ${green}, ${blue2}, ${vol / 4})`);
 
     for (var i = 0; i < particles.length; i++) {
       particles[i].follow(flowfield);
       particles[i].update(speed);
       particles[i].edges();
-      particles[i].show(speed);
+      particles[i].show(speed, vol);
     }
 
     // Control for continually adding and removing particles to maintain variation in effect
@@ -294,13 +351,13 @@ function Particles() {
       }
     }
 
-    if (count == 30) {
-      particles.shift();
-      particles.push(new Particle(p5));
-      count = 0;
-    } else {
-      count++;
-    }
+    // if (count == 30) {
+    //   particles.shift();
+    //   particles.push(new Particle(p5));
+    //   count = 0;
+    // } else {
+    //   count++;
+    // }
   }
 
   const windowResized = (p5) => {
@@ -320,13 +377,8 @@ function Particles() {
         draw={draw}
       />
       <Controls sketch={sketch} />
-      <div className="variable-controls">
-        <div className="variable-controls-container">
-          <p onClick={() => resetParticles()}>Reset particles</p>
-        </div>
-      </div>
     </>
   );
 }
 
-export default Particles;
+export default ParticlesArt;

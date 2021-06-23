@@ -12,6 +12,14 @@ import PeakDetect from "library/PeakDetectTest";
 import CircularBeat from "library/CircularBeat";
 import ParticlesOld from "library/ParticlesOld";
 import Particles from "library/Particles";
+import Demo from "library/demo";
+import Landing from "library/Landing";
+import Lines from "library/Lines";
+import ParticlesArt from "library/ParticleArt";
+import ParticleArt2 from "library/ParticleArt2";
+import ParticleArt3 from "library/ParticleArt3";
+import ParticleArt4 from "library/ParticleArt4";
+import MicParticles from "library/MicParticles";
 
 export default [
   {
@@ -29,6 +37,31 @@ export default [
     path: "particles",
     component: <Particles />,
   },
+  {
+    label: "Particles Art",
+    path: "particlesart",
+    component: <ParticlesArt />,
+  },
+  {
+    label: "Particles Art2",
+    path: "particlesart2",
+    component: <ParticleArt2 />,
+  },
+  {
+    label: "Particles Art3",
+    path: "particlesart3",
+    component: <ParticleArt3 />,
+  },
+  {
+    label: "Particles Art4",
+    path: "particlesart4",
+    component: <ParticleArt4 />,
+  },
+  {
+    label: "Lines",
+    path: "lines",
+    component: <Lines />,
+  },
   // {
   //   label: "Peak Detect",
   //   path: "peakDetect",
@@ -38,6 +71,11 @@ export default [
     label: "Mic Spectrum",
     path: "micSpectrum",
     component: <MicSpectrum />,
+  },
+  {
+    label: "Mic Particles",
+    path: "micParticles",
+    component: <MicParticles />,
   },
   {
     label: "Spectrum Art",
@@ -78,5 +116,10 @@ export default [
     label: "Spectrum",
     path: "spectrum",
     component: <SpectrumConstant />,
+  },
+  {
+    label: "Landing",
+    path: "",
+    component: <Landing />,
   },
 ];
