@@ -1,7 +1,7 @@
 import React from "react";
 import Sketch from "react-p5";
 import "p5/lib/addons/p5.sound";
-import { Particle } from "components/Particle";
+import LandingContent from "components/LandingContent.jsx";
 
 function Landing() {
   let song, amp, fft;
@@ -18,18 +18,7 @@ function Landing() {
   let colorPick = 0;
   let fullScroll = 0;
 
-  // Particles variables
-  let particles = [];
-  let cols, rows, flowfield;
-  let scl = 40;
-  let prevol = 3;
-  let noise_input = 6;
-  let zoff = 0;
-  let speed_input = 0.5;
-  let count = 0;
-  let num_particles = 100;
-
-  let scaleModifiers = [3, 1, 1];
+  let scaleModifiers = [3, 1];
   let colors = [
     [0, 0, 0],
     [237, 51, 18],
@@ -49,96 +38,6 @@ function Landing() {
       song.loop();
     }
   };
-
-  function perlin(p5) {
-    p5.background(10, 20);
-
-    var vol = amp.getLevel();
-
-    var diff = Math.abs(vol - prevol);
-
-    var ndiff = vol - prevol;
-    var nval = ndiff / 100;
-    var val = diff / 5;
-
-    var volumeNoise = Math.ceil(vol);
-
-    var yoff = 0;
-    for (var y = 0; y < rows; y++) {
-      var xoff = 0;
-      for (var x = 0; x < cols; x++) {
-        var vindex = (x + y * p5.width) * 4;
-
-        var index = x + y * cols;
-
-        // Direction of noise field is based off audio input
-        var angle =
-          p5.noise(
-            (xoff / 2) * noise_input,
-            (yoff / 2) * noise_input,
-            (zoff / 2) * noise_input * volumeNoise
-          ) *
-          p5.TWO_PI *
-          2;
-        var v = p5.constructor.Vector.fromAngle(angle);
-
-        p5.stroke(255);
-        p5.push();
-        p5.translate(x * scl, y * scl);
-        p5.rotate(v.heading());
-        p5.pop();
-
-        v.setMag(1);
-
-        flowfield[index] = v;
-        xoff -= 0.01;
-
-        p5.stroke(0, 1000);
-      }
-      yoff += 0.01;
-      zoff += 0.0004;
-
-      prevol = vol;
-    }
-
-    // Update particle speed based on audio volume
-    var speed = speed_input + vol * 55; //55
-    p5.stroke(255);
-
-    for (var i = 0; i < particles.length; i++) {
-      particles[i].follow(p5, flowfield);
-      particles[i].update(speed);
-      particles[i].edges(p5);
-      particles[i].show(p5, speed);
-    }
-
-    // Control for continually adding and removing particles to maintain variation in effect
-    if (particles.length !== num_particles) {
-      let diff_num = num_particles - particles.length;
-
-      if (diff_num > 0) {
-        i = 0;
-        while (i <= diff_num) {
-          particles.push(new Particle(p5, scl, cols));
-          i++;
-        }
-      } else {
-        i = 0;
-        while (i >= diff_num) {
-          particles.shift();
-          i--;
-        }
-      }
-    }
-
-    if (count == 30) {
-      particles.shift();
-      particles.push(new Particle(p5, scl, cols));
-      count = 0;
-    } else {
-      count++;
-    }
-  }
 
   const windowResized = (p5) => {
     p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
@@ -165,17 +64,8 @@ function Landing() {
     );
     colorDifs = determineColorDifs(lastBackgroundColor, backgroundColorAim);
 
-    // Particles
-    // cols = p5.floor(p5.width / scl);
-    // rows = p5.floor(p5.height / scl);
-    // flowfield = new Array(cols * rows);
-    // for (var i = 0; i < num_particles; i++) {
-    //   particles[i] = new Particle(p5, scl, cols);
-    // }
-
     amp = new p5.constructor.Amplitude();
     fft = new p5.constructor.FFT();
-    // song.play();
     p5.rotateX(p5.PI);
     p5.background(0);
   };
@@ -192,7 +82,6 @@ function Landing() {
     const volume = amp.getLevel();
     let freq = fft.getCentroid();
     freq *= 0.001;
-    // perlin(p5);
 
     const mapF = p5.map(freq, 0, 1, 0, 20);
     const mapA = p5.map(volume, 0, 0.2, 0, 0.5);
@@ -241,13 +130,6 @@ function Landing() {
       p5.rotateY(p5.frameCount * 0.005);
       p5.sphere(p5.width / 7, 200, 200);
     }
-
-    // console.log(shaderPick);
-
-    // if (shaderPick === 2) {
-    //   p5.resetShader();
-    //   perlin(p5);
-    // }
   };
 
   function mouseWheel(event) {
@@ -297,9 +179,9 @@ function Landing() {
         preload={preload}
         setup={setup}
         draw={draw}
-        mouseWheel={mouseWheel}
+        // mouseWheel={mouseWheel}
       />
-      <p className="landing-header">SYNTHESIEST</p>
+      <LandingContent />
     </>
   );
 }

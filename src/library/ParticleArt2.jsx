@@ -13,18 +13,22 @@ var peaks;
 var count = 0;
 var prespeed = 3;
 var cols, rows;
-var scl = 40;
+var scl = 20;
 var fr;
 var zoff = 0;
 var particles = [];
 var flowfield;
 var sector_length = 100;
 let shouldReset = false;
+let startingDensity = 1;
 
 // Custom particles for use in visualiser
 export function Particle(p5) {
   // Initialise variables
-  this.pos = p5.createVector(p5.random(width), p5.random(height));
+  this.pos = p5.createVector(
+    p5.random(width / startingDensity),
+    p5.random(height / startingDensity)
+  );
   this.vel = p5.constructor.Vector.random2D();
   this.acc = p5.createVector(0, 0);
   this.maxspeed = 10;
@@ -150,6 +154,9 @@ function ParticlesArt() {
   const orange = [237, 51, 18];
   const blue = [44, 81, 201];
 
+  // const orange = [253, 252, 110];
+  // const blue = [7, 223, 110];
+
   // Unmount clean up
   useEffect(() => {
     // Something
@@ -179,7 +186,6 @@ function ParticlesArt() {
     height = window.innerHeight;
     width = window.innerWidth;
     amp = new p5.constructor.Amplitude();
-    p5.pixelDensity(1);
     cols = p5.floor(width / scl);
     rows = p5.floor(height / scl);
     fr = p5.createP("");
@@ -198,7 +204,7 @@ function ParticlesArt() {
     if (width > 1300) {
       prespeed = 5;
     }
-    p5.blendMode(p5.SCREEN);
+    // p5.blendMode(p5.SCREEN);
   };
 
   const draw = (p5) => {

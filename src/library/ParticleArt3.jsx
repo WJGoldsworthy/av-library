@@ -187,7 +187,7 @@ function ParticlesArt() {
     height = window.innerHeight;
     width = window.innerWidth;
     amp = new p5.constructor.Amplitude();
-    p5.pixelDensity(1);
+    p5.pixelDensity(5);
     cols = p5.floor(width / scl);
     rows = p5.floor(height / scl);
     fr = p5.createP("");
