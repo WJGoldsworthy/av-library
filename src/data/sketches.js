@@ -23,6 +23,11 @@ import MicParticles from "library/MicParticles";
 
 export default [
   {
+    label: "Home",
+    path: "",
+    component: <Landing />,
+  },
+  {
     label: "Waveform",
     path: "waveform",
     component: <WaveBeat />,
@@ -57,11 +62,6 @@ export default [
     path: "particlesart4",
     component: <ParticleArt4 />,
   },
-  {
-    label: "Lines",
-    path: "lines",
-    component: <Lines />,
-  },
   // {
   //   label: "Peak Detect",
   //   path: "peakDetect",
@@ -71,11 +71,6 @@ export default [
     label: "Mic Spectrum",
     path: "micSpectrum",
     component: <MicSpectrum />,
-  },
-  {
-    label: "Mic Particles",
-    path: "micParticles",
-    component: <MicParticles />,
   },
   {
     label: "Spectrum Art",
@@ -116,10 +111,5 @@ export default [
     label: "Spectrum",
     path: "spectrum",
     component: <SpectrumConstant />,
-  },
-  {
-    label: "Landing",
-    path: "",
-    component: <Landing />,
   },
 ];

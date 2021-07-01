@@ -19,3 +19,17 @@
   top: calc(50% - 75px);
   font-family: none;
 }
+
+#p5_loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: black;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Archivo Black", sans-serif;
+}

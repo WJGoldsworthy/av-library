@@ -1,6 +1,8 @@
 .reveal-text-container {
   overflow: hidden;
   white-space: nowrap;
+  display: flex;
+  font-family: "Archivo Black", sans-serif;
 
   & span {
     transform: translate(0, 100%);

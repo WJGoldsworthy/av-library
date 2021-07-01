@@ -1,5 +1,6 @@
 import React from "react";
 import Sketch from "react-p5";
+import config from "config";
 import "p5/lib/addons/p5.sound";
 import LandingContent from "components/LandingContent.jsx";
 
@@ -7,7 +8,6 @@ function Landing() {
   let song, amp, fft;
   let manShaders, blobShaders, manModel;
   let lastBackgroundColor = [0, 0, 0];
-  let backgroundColorAim = [237, 51, 18];
   let colorDifs = [0, 0, 0];
   let alpha = 0;
   let shaderPick = 0;
@@ -17,11 +17,15 @@ function Landing() {
   let nextShader = 0;
   let colorPick = 0;
   let fullScroll = 0;
+  let isChanged = true;
+  let xPos = 0;
+  let yPos = 0;
 
   let scaleModifiers = [3, 1];
   let colors = [
     [0, 0, 0],
     [237, 51, 18],
+    [44, 81, 201],
     [59, 206, 172],
     [244, 224, 77],
     [38, 38, 38],
@@ -44,8 +48,8 @@ function Landing() {
   };
 
   const preload = (p5) => {
-    song = p5.loadSound("assets/audio/vale.mp3", () => {
-      song.play();
+    song = p5.loadSound(`${config.s3Url}/audio/vale.mp3`, () => {
+      song.loop();
     });
     manShaders = p5.loadShader(
       "assets/shaders/man.vert",
@@ -62,7 +66,6 @@ function Landing() {
     p5.createCanvas(window.innerWidth, window.innerHeight, p5.WEBGL).parent(
       canvasParentRef
     );
-    colorDifs = determineColorDifs(lastBackgroundColor, backgroundColorAim);
 
     amp = new p5.constructor.Amplitude();
     fft = new p5.constructor.FFT();
@@ -71,13 +74,19 @@ function Landing() {
   };
 
   const draw = (p5) => {
-    if (shaderPick !== 2) {
-      p5.background(
-        Math.ceil(lastBackgroundColor[0] + colorDifs[0] * alpha),
-        Math.ceil(lastBackgroundColor[1] + colorDifs[1] * alpha),
-        Math.ceil(lastBackgroundColor[2] + colorDifs[2] * alpha)
-      );
+    if (alpha < 1) {
+      alpha += 0.01;
     }
+    if (alpha >= 1) {
+      alpha = 1;
+      isChanged = true;
+    }
+    p5.background(
+      Math.ceil(lastBackgroundColor[0] + colorDifs[0] * alpha),
+      Math.ceil(lastBackgroundColor[1] + colorDifs[1] * alpha),
+      Math.ceil(lastBackgroundColor[2] + colorDifs[2] * alpha)
+    );
+
     fft.analyze();
     const volume = amp.getLevel();
     let freq = fft.getCentroid();
@@ -90,14 +99,14 @@ function Landing() {
     }
     if (triggerChange) {
       if (scaleGrowth >= 0 && !hasShrunk) {
-        scaleGrowth -= 0.006;
+        scaleGrowth -= 0.012;
       }
       if (scaleGrowth <= 0) {
         hasShrunk = true;
       }
       if (scaleGrowth <= 1 && hasShrunk) {
         shaderPick = nextShader;
-        scaleGrowth += 0.006;
+        scaleGrowth += 0.012;
       }
       if (scaleGrowth > 1) {
         triggerChange = false;
@@ -105,6 +114,18 @@ function Landing() {
         scaleGrowth = 1;
       }
     }
+
+    if (colorPick === 3) {
+      if (xPos <= 200) {
+        xPos += 1.5;
+      }
+    } else {
+      if (xPos > 1) {
+        xPos -= 1.5;
+      }
+    }
+
+    p5.translate(xPos * 1.5, yPos);
 
     if (shaderPick === 0) {
       manShaders.setUniform("uTime", p5.frameCount);
@@ -133,43 +154,78 @@ function Landing() {
   };
 
   function mouseWheel(event) {
-    if (!triggerChange && !hasShrunk) {
-      fullScroll += event.deltaTime;
-    }
-    if (alpha >= 0) {
-      alpha += event.deltaTime * 0.005;
-      if (alpha >= 1) {
-        colorPick += 1;
-        lastBackgroundColor = backgroundColorAim;
-        colorDifs = determineColorDifs(lastBackgroundColor, colors[colorPick]);
-        if (colorPick === colors.length - 1) {
-          colorPick = 0;
+    if (event.deltaY < 0) {
+      if (colorPick !== 0) {
+        if (isChanged) {
+          lastBackgroundColor = colors[colorPick];
+          isChanged = false;
+          colorPick -= 1;
+          colorDifs = determineColorDifs(
+            lastBackgroundColor,
+            colors[colorPick]
+          );
+          alpha = 0;
+          if (colorPick === 1) {
+            if (!triggerChange && !hasShrunk) {
+              triggerChange = true;
+              nextShader = 0;
+            }
+          }
         }
-        backgroundColorAim = colors[colorPick];
+      }
+    } else {
+      if (isChanged) {
+        lastBackgroundColor = colors[colorPick];
+        isChanged = false;
+        colorPick += 1;
+        colorDifs = determineColorDifs(lastBackgroundColor, colors[colorPick]);
         alpha = 0;
+        if (colorPick === 2) {
+          if (!triggerChange && !hasShrunk) {
+            triggerChange = true;
+            nextShader = 1;
+          }
+        }
       }
     }
-    if (alpha <= 0) {
-      alpha = 0.0001;
-    }
-    if (fullScroll >= 1020 && shaderPick === 0) {
-      if (!triggerChange && !hasShrunk) {
-        triggerChange = true;
-        nextShader = 1;
-      }
-    }
-    if (fullScroll <= 1020 && shaderPick === 1) {
-      if (!triggerChange && !hasShrunk) {
-        triggerChange = true;
-        nextShader = 0;
-      }
-    }
-    if (fullScroll >= 2040 && shaderPick === 1) {
-      if (!triggerChange && !hasShrunk) {
-        triggerChange = true;
-        nextShader = 2;
-      }
-    }
+
+    // if (!triggerChange && !hasShrunk) {
+    //   fullScroll += event.deltaTime;
+    // }
+    // if (alpha >= 0) {
+    //   alpha += event.deltaTime * 0.005;
+    //   if (alpha >= 1) {
+    //     colorPick += 1;
+    //     lastBackgroundColor = backgroundColorAim;
+    //     colorDifs = determineColorDifs(lastBackgroundColor, colors[colorPick]);
+    //     if (colorPick === colors.length - 1) {
+    //       colorPick = 0;
+    //     }
+    //     backgroundColorAim = colors[colorPick];
+    //     alpha = 0;
+    //   }
+    // }
+    // if (alpha <= 0) {
+    //   alpha = 0.0001;
+    // }
+    // if (fullScroll >= 1020 && shaderPick === 0) {
+    //   if (!triggerChange && !hasShrunk) {
+    //     triggerChange = true;
+    //     nextShader = 1;
+    //   }
+    // }
+    // if (fullScroll <= 1020 && shaderPick === 1) {
+    //   if (!triggerChange && !hasShrunk) {
+    //     triggerChange = true;
+    //     nextShader = 0;
+    //   }
+    // }
+    // if (fullScroll >= 2040 && shaderPick === 1) {
+    //   if (!triggerChange && !hasShrunk) {
+    //     triggerChange = true;
+    //     nextShader = 2;
+    //   }
+    // }
   }
 
   return (
@@ -179,9 +235,8 @@ function Landing() {
         preload={preload}
         setup={setup}
         draw={draw}
-        // mouseWheel={mouseWheel}
       />
-      <LandingContent />
+      <LandingContent mouseWheel={mouseWheel} />
     </>
   );
 }
