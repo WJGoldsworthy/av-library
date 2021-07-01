@@ -5,7 +5,7 @@ import ScrollIndicator from "components/ScrollIndicator";
 import "./styles.scss";
 import RevealButton from "components/RevealButton";
 
-const LandingContent = (mouseWheel) => {
+const LandingContent = ({ mouseWheel }) => {
   const [section, setSection] = useState(0);
   const [sectionChanging, setSectionChanging] = useState(false);
   const [firstLoad, setFirstLoad] = useState(true);
@@ -26,7 +26,7 @@ const LandingContent = (mouseWheel) => {
 
   const handleScroll = (e) => {
     if (!sectionChanging) {
-      mouseWheel.mouseWheel(e);
+      mouseWheel(e);
       if (e.deltaY < 0) {
         // scroll up
         if (section !== 0) {

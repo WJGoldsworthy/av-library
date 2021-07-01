@@ -1,6 +1,8 @@
 import React from "react";
 import "./styles.scss";
 
+// BackgroundChanging images ? based on peakDetect
+
 const RevealButton = ({ link, text, isOpen }) => {
   return (
     <>
