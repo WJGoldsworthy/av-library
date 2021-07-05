@@ -205,9 +205,7 @@ function Landing() {
             value="ENTER"
             type="random"
             onClick={() => userGestureStart()}
-          >
-            Enter
-          </ClipText>
+          />
           <p>This experience is better with sound</p>
         </div>
       </>
