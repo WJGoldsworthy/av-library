@@ -142,7 +142,7 @@ function Particles() {
   // Control for visualiser variables
   var speed_input = 1.5;
   var noise_input = 6;
-  var num_particles = 1500;
+  var num_particles = 1000;
   let song;
 
   // Unmount clean up

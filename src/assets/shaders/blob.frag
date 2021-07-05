@@ -31,8 +31,8 @@ void main() {
     // Comment / uncomment for mix on/off.
     
     // One color.
-    // gl_FragColor = vec4(color1, 1.0);
+    gl_FragColor = vec4(color1, 1.0);
 
     // Mix.
-    gl_FragColor = vec4(finalColor, 1.0);      
+    //gl_FragColor = vec4(finalColor, 1.0);      
 }

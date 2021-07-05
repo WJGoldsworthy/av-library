@@ -21,7 +21,7 @@ const LandingContent = ({ mouseWheel }) => {
     setSectionChanging(true);
     setTimeout(() => {
       setSectionChanging(false);
-    }, 2000);
+    }, 3000);
   };
 
   const handleScroll = (e) => {
@@ -62,7 +62,8 @@ const LandingContent = ({ mouseWheel }) => {
           text="and generative art."
           className="landing-text"
         />
-        <RevealButton isOpen={section === 3} text="Visit the playground" />
+        <RevealButton link='/particles' isOpen={section === 3} text="Visit the playground" />
+        <RevealButton link='/gallery' isOpen={section === 3} text="Visit the Gallery" />
       </div>
       <div className="bottom-right-container">
         <RevealText

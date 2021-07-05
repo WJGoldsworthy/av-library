@@ -6,8 +6,7 @@ const gifs = [
     "url(/assets/gifs/orig.gif)",
     "url(/assets/gifs/bluewater.gif)",
     "url(/assets/gifs/bubbles.gif)",
-    "url(/assets/gifs/green.gif)",
-    "url(/assets/gifs/electric.gif)"
+    "url(/assets/gifs/green.gif)"
 ]
 
 function ClipText (props) {
