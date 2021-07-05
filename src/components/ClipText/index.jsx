@@ -3,13 +3,11 @@ import React from 'react';
 import './styles.scss'
 
 const gifs = [
-    "url(https://media.giphy.com/media/3o6Ztb45EYezY9x9gQ/giphy.gif)",
-    "url(https://media.giphy.com/media/3NeSk2IVEd2FYUQEcM/giphy.gif)",
-    "url(https://media.giphy.com/media/9PcvOTnh6lyfs2mFON/giphy.gif)",
-    "url(https://media.giphy.com/media/YMT43RuQJ2Ut8ghTpM/giphy.gif)",
-    "url(https://media.giphy.com/media/RfMEN7KrjX153ubUQH/giphy.gif)",
-    "url(https://media.giphy.com/media/KznLJtpg1kRXBNRaH2/giphy.gif)",
-    "url(https://media.giphy.com/media/3o6Ztb45EYezY9x9gQ/giphy.gif)"
+    "url(/assets/gifs/orig.gif)",
+    "url(/assets/gifs/bluewater.gif)",
+    "url(/assets/gifs/bubbles.gif)",
+    "url(/assets/gifs/green.gif)",
+    "url(/assets/gifs/electric.gif)"
 ]
 
 function ClipText (props) {
