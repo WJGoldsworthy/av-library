@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import Sketch from "react-p5";
 import config from "config";
 import "p5/lib/addons/p5.sound";
 import LandingContent from "components/LandingContent.jsx";
+import ClipText from "components/ClipText";
 
 function Landing() {
+  const [firstLoad, setFirstload] = useState(true);
+
   let song, amp, fft;
   let manShaders, blobShaders, manModel;
   let lastBackgroundColor = [0, 0, 0];
@@ -16,7 +19,6 @@ function Landing() {
   let hasShrunk = false;
   let nextShader = 0;
   let colorPick = 0;
-  let fullScroll = 0;
   let isChanged = true;
   let xPos = 0;
   let yPos = 0;
@@ -30,6 +32,10 @@ function Landing() {
     [244, 224, 77],
     [38, 38, 38],
   ];
+
+  const userGestureStart = () => {
+    setFirstload(false);
+  };
 
   const determineColorDifs = (c1, c2) => {
     return [c2[0] - c1[0], c2[1] - c1[1], c2[2] - c1[2]];
@@ -188,44 +194,23 @@ function Landing() {
         }
       }
     }
+  }
 
-    // if (!triggerChange && !hasShrunk) {
-    //   fullScroll += event.deltaTime;
-    // }
-    // if (alpha >= 0) {
-    //   alpha += event.deltaTime * 0.005;
-    //   if (alpha >= 1) {
-    //     colorPick += 1;
-    //     lastBackgroundColor = backgroundColorAim;
-    //     colorDifs = determineColorDifs(lastBackgroundColor, colors[colorPick]);
-    //     if (colorPick === colors.length - 1) {
-    //       colorPick = 0;
-    //     }
-    //     backgroundColorAim = colors[colorPick];
-    //     alpha = 0;
-    //   }
-    // }
-    // if (alpha <= 0) {
-    //   alpha = 0.0001;
-    // }
-    // if (fullScroll >= 1020 && shaderPick === 0) {
-    //   if (!triggerChange && !hasShrunk) {
-    //     triggerChange = true;
-    //     nextShader = 1;
-    //   }
-    // }
-    // if (fullScroll <= 1020 && shaderPick === 1) {
-    //   if (!triggerChange && !hasShrunk) {
-    //     triggerChange = true;
-    //     nextShader = 0;
-    //   }
-    // }
-    // if (fullScroll >= 2040 && shaderPick === 1) {
-    //   if (!triggerChange && !hasShrunk) {
-    //     triggerChange = true;
-    //     nextShader = 2;
-    //   }
-    // }
+  if (firstLoad) {
+    return (
+      <>
+        <div className="landing-open">
+          <ClipText
+            value="ENTER"
+            type="random"
+            onClick={() => userGestureStart()}
+          >
+            Enter
+          </ClipText>
+          <p>This experience is better with sound</p>
+        </div>
+      </>
+    );
   }
 
   return (

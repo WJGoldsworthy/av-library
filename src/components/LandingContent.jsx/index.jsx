@@ -13,7 +13,7 @@ const LandingContent = ({ mouseWheel }) => {
   useEffect(() => {
     setTimeout(() => {
       setFirstLoad(false);
-    }, 4000);
+    }, 2000);
   }, []);
 
   const handleChange = (sectionNumber) => {
