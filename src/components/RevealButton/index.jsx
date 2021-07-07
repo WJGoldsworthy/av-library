@@ -12,6 +12,7 @@ const RevealButton = ({ link, text, isOpen }) => {
       <div onClick={() => history.push(link)} className={`reveal-button ${isOpen && "active"}`}>
         <p className="reveal-button__text">{text}</p>
       </div>
+      {/* <div className="reveal-button__back"></div> */}
     </>
   );
 };

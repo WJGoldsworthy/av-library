@@ -3,12 +3,14 @@ import { Switch, BrowserRouter as Router, Route } from "react-router-dom";
 import sketches from "data/sketches";
 import Navigation from "components/Navigation";
 import Gallery from "components/Gallery";
+import SlideOutMenu from "components/SlideOutMenu";
 import "./App.css";
 
 function App() {
   return (
     <Router>
       <div className="app-container">
+        {/* <SlideOutMenu links={[{label: 'test'}, {label: 'test'}, {label: 'test'}]} /> */}
         <Navigation />
         <Switch>
           <Route exact path='/gallery'>

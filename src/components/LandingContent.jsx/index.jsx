@@ -63,7 +63,11 @@ const LandingContent = ({ mouseWheel }) => {
           className="landing-text"
         />
         <RevealButton link='/particles' isOpen={section === 3} text="Visit the playground" />
+        {/* <p>The playground is a collection of audio visual sketches that you can experiment with,</p>
+        <p>customise and create cool shit.</p> */}
         <RevealButton link='/gallery' isOpen={section === 3} text="Visit the Gallery" />
+        {/* <p>In the gallery you can preview some of the artwork I have created</p>
+        <p>and generated using the visualisers and systems.</p> */}
       </div>
       <div className="bottom-right-container">
         <RevealText
