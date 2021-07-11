@@ -181,7 +181,7 @@ function Landing() {
         }
       }
     } else {
-      if (isChanged) {
+      if (isChanged && colorPick <= 2) {
         lastBackgroundColor = colors[colorPick];
         isChanged = false;
         colorPick += 1;

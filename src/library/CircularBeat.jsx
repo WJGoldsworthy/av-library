@@ -2,6 +2,7 @@ import "p5/lib/addons/p5.sound";
 import React, { useEffect, useState } from "react";
 import Sketch from "react-p5";
 import Controls, { SketchInstance } from "components/Controls";
+import RangeInput from "components/Controls/components/RangeInput";
 
 // TODO: Match beat to radial circle?
 let particles = [];
@@ -113,63 +114,56 @@ const VariableControls = ({ p5, sketch }) => {
   return (
     <div className="variable-controls">
       <div className="variable-controls-container">
-        <label>Velocity</label>
-        <input
-          type="range"
+        <RangeInput
+          label="Velocity"
           max="10"
           min="1"
           step="1"
           defaultValue="2"
           onChange={(e) => changeVelocity(e)}
         />
-        <label>Opacity</label>
-        <input
-          type="range"
+        <RangeInput
+          label="Opacity"
           max="1"
           min="0"
           step="0.1"
           defaultValue="0.2"
           onChange={(e) => changeOpacity(e)}
         />
-        <label>Colors</label>
-        <input
-          type="range"
-          max={colors.length}
+        <RangeInput
+          label="Colors"
+          max={colors.length - 1}
           min="0"
           step="1"
           defaultValue="5"
           onChange={(e) => changeColors(e)}
         />
-        <label>Low Distance</label>
-        <input
-          type="range"
+        <RangeInput
+          label="Low Distance"
           max="200"
           min="1"
           step="1"
           defaultValue="1"
           onChange={(e) => changeLowerDistance(e)}
         />
-        <label>High Distance</label>
-        <input
-          type="range"
+        <RangeInput
+          label="High Distance"
           max="300"
           min="50"
           step="1"
           defaultValue="100"
           onChange={(e) => changeHighDistance(e)}
         />
-        <label>Noise</label>
-        <input
-          type="range"
+        <RangeInput
+          label="Noise"
           max="5"
           min="1"
           step="1"
           defaultValue="2"
           onChange={(e) => changeNoise(e)}
         />
-        <label>Particles</label>
-        <input
-          type="range"
+        <RangeInput
+          label="Number of Particles"
           max="60"
           min="10"
           step="1"
@@ -313,7 +307,7 @@ function Particle(x, y, radius, color, velocity) {
     let color = hexToRgbA(this.color);
     color = color.replace("1)", "" + opacityFill + ")");
     p5.stroke(color);
-    p5.strokeWeight(1);
+    p5.strokeWeight(0.2); // make variable
     p5.line(lastPoint.x, lastPoint.y, this.x, this.y);
   };
 }

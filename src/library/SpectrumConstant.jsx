@@ -2,6 +2,7 @@ import "p5/lib/addons/p5.sound";
 import React, { useState, useEffect } from "react";
 import Sketch from "react-p5";
 import Controls, { SketchInstance } from "components/Controls";
+import RangeInput from "components/Controls/components/RangeInput";
 
 function SpectrumConstant() {
   let song;
@@ -180,44 +181,32 @@ function SpectrumConstant() {
       />
       <div className="variable-controls">
         <div className="variable-controls-container">
-          <label for="background-opacity">Background</label>
-          <input
-            id="background-opacity"
-            name="background-opacity"
-            type="range"
+          <RangeInput
+            label="Background"
             max="100"
             min="0"
             defaultValue="40"
             step="20"
             onChange={(e) => changeBackgroundOpacity(e)}
-          ></input>
-          <label for="line-opacity">Line Opacity</label>
-          <input
-            id="line-opacity"
-            name="line-opacity"
-            type="range"
+          />
+          <RangeInput
+            label="Line Opacity"
             max="100"
             min="0"
             defaultValue="40"
             step="20"
             onChange={(e) => changeLineOpacity(e)}
-          ></input>
-          <label>Line Colors</label>
-          <input
-            id="line-colors"
-            name="line-colors"
-            type="range"
-            max={colors.length}
+          />
+          <RangeInput
+            label="Line Colors"
+            max={colors.length - 1}
             min="1"
             defaultValue="1"
             step="1"
             onChange={(e) => changeColors(e)}
-          ></input>
-          <label>Draw Frequency</label>
-          <input
-            id="draw-freq"
-            name="draw-freq"
-            type="range"
+          />
+          <RangeInput
+            label="Draw Frequency"
             max="6"
             min="1"
             defaultValue="1"
@@ -225,7 +214,7 @@ function SpectrumConstant() {
             onChange={(e) => {
               drawFreq = e.target.value;
             }}
-          ></input>
+          />
           <label for="backgroundFill">Fill Background</label>
           <input
             type="checkbox"

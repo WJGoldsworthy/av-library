@@ -34,7 +34,9 @@ const LandingContent = ({ mouseWheel }) => {
         }
       } else {
         // scroll down
-        handleChange(section + 1);
+        if (section <= 2) {
+          handleChange(section + 1);
+        }
       }
     }
   };
