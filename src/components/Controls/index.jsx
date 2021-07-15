@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import songNames from "data/songNames";
+import React, { useState } from "react";
+import songNames, { musicData } from "data/songNames";
 import "./styles.scss";
 import config from "config";
 import { ReactComponent as Play } from "../../assets/images/play.svg";
@@ -9,11 +9,13 @@ import { ReactComponent as Next } from "../../assets/images/next.svg";
 import { ReactComponent as Stop } from "../../assets/images/stop.svg";
 import { ReactComponent as Playlist } from "../../assets/images/playlist.svg";
 import { ReactComponent as Close } from "../../assets/images/closeMenu.svg";
+import { ReactComponent as Open } from "../../assets/images/open.svg";
 
-const Controls = ({ song, selectColors, sketch, currentTime }) => {
+const Controls = ({ sketch }) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentSong, setCurrentSong] = useState();
   const [openSelect, setOpenSelect] = useState(false);
+  const [open, setOpen] = useState(true);
 
   const pausePlaySong = () => {
     if (sketch.song.isPlaying()) {
@@ -23,15 +25,6 @@ const Controls = ({ song, selectColors, sketch, currentTime }) => {
       sketch.song.play();
       setIsPlaying(true);
     }
-  };
-
-  const changeSong = (e) => {
-    sketch.changeSong(e);
-    setIsPlaying(true);
-  };
-
-  const clearCanvas = () => {
-    sketch.clearCanvas();
   };
 
   const previousSong = () => {
@@ -56,10 +49,32 @@ const Controls = ({ song, selectColors, sketch, currentTime }) => {
     setOpenSelect(false);
   };
 
+  const getSongDetails = (song) => {
+    if (!song) {
+      return [{ name: "loading", artist: "loading" }];
+    }
+    return musicData.filter((track) => track.file === song);
+  };
+
   return (
-    <div className="c-controls">
+    <div className={`c-controls ${!open && "closed"}`}>
+      <div
+        onClick={() => setOpen(!open)}
+        className={`c-controls__open-close ${open && "open"}`}
+      >
+        <Open />
+      </div>
       <div className="c-controls-container">
-        <p>{currentSong ? currentSong : sketch.currentSong}</p>
+        <p>
+          {currentSong
+            ? getSongDetails(currentSong)[0].name
+            : getSongDetails(sketch.currentSong)[0].name}
+        </p>
+        <p className="c-controls__artist">
+          {currentSong
+            ? getSongDetails(currentSong)[0].artist
+            : getSongDetails(sketch.currentSong)[0].artist}
+        </p>
         <div className="c-controls-buttons">
           <Previous onClick={() => previousSong()} />
           {!isPlaying ? (
@@ -77,7 +92,6 @@ const Controls = ({ song, selectColors, sketch, currentTime }) => {
           )}
           <Stop onClick={() => pausePlaySong()} />
           <Next onClick={() => nextSong()} />
-          {currentTime}
         </div>
       </div>
       <div className="c-controls-song-select">
@@ -91,8 +105,11 @@ const Controls = ({ song, selectColors, sketch, currentTime }) => {
             onClick={() => setOpenSelect(false)}
           />
           <div className="c-controls-select-modal__content">
-            {songNames.map((name) => (
-              <p onClick={() => selectSong(name)}>{name}</p>
+            {musicData.map((track) => (
+              <div onClick={() => selectSong(track.file)}>
+                <p>{track.name}</p>
+                <p>{track.artist}</p>
+              </div>
             ))}
           </div>
         </div>

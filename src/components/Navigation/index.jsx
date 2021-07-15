@@ -14,13 +14,18 @@ const Navigation = () => {
       {isOpen && (
         <div className="menu-open">
           <Close onClick={() => setIsOpen(!isOpen)} />
-          {sketches.map((sketch) => (
-            <Link to={`/${sketch.path}`}>
-              <div onClick={() => setIsOpen(!isOpen)} className="c-nav-item">
-                {sketch.label}
-              </div>
-            </Link>
-          ))}
+          {sketches.map((sketch) => {
+            if (sketch.hidden) {
+              return;
+            }
+            return (
+              <Link to={`/${sketch.path}`}>
+                <div onClick={() => setIsOpen(!isOpen)} className="c-nav-item">
+                  {sketch.label}
+                </div>
+              </Link>
+            );
+          })}
         </div>
       )}
     </nav>

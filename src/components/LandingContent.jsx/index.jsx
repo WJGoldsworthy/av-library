@@ -64,12 +64,18 @@ const LandingContent = ({ mouseWheel }) => {
           text="and generative art."
           className="landing-text"
         />
-        <RevealButton link='/particles' isOpen={section === 3} text="Visit the playground" />
+        <RevealButton
+          link="/particles"
+          isOpen={section === 3}
+          text="Visit the playground"
+        />
         {/* <p>The playground is a collection of audio visual sketches that you can experiment with,</p>
         <p>customise and create cool shit.</p> */}
-        <RevealButton link='/gallery' isOpen={section === 3} text="Visit the Gallery" />
-        {/* <p>In the gallery you can preview some of the artwork I have created</p>
-        <p>and generated using the visualisers and systems.</p> */}
+        <RevealButton
+          link="/gallery"
+          isOpen={section === 3}
+          text="Visit the Gallery"
+        />
       </div>
       <div className="bottom-right-container">
         <RevealText
@@ -102,6 +108,11 @@ const LandingContent = ({ mouseWheel }) => {
         <RevealText
           isOpen={section === 2}
           text="music and creative coding."
+          className="landing-text"
+        />
+        <RevealText
+          isOpen={section === 3}
+          text="Contact: will@synthesiest.com"
           className="landing-text"
         />
       </div>

@@ -1,45 +1,131 @@
 import "p5/lib/addons/p5.sound";
-import React from "react";
+import React, { useState } from "react";
 import RangeInput from "components/Controls/components/RangeInput";
 import Sketch from "react-p5";
+import { ReactComponent as OpenClose } from "../assets/images/doubleleft.svg";
+import "../components/Controls/styles.scss";
+
+const VariableControls = () => {
+  const [open, setOpen] = useState(true);
+
+  const changeBackgroundOpacity = (e) => {
+    backgroundOpacity =
+      backgroundOpacityValues[Math.floor(100 / e.target.value)];
+  };
+
+  const changeLineOpacity = (e) => {
+    opacityFill = backgroundOpacityValues[Math.floor(100 / e.target.value)];
+  };
+
+  const changeFftSize = (e) => {
+    fftSize = fftSizes[e.target.value];
+  };
+
+  const changeColors = (e) => {
+    colorSelect = e.target.value - 1;
+  };
+
+  const setClearCanvas = () => {
+    clearCanvas = true;
+  };
+
+  return (
+    <div className={`variable-controls ${!open && "closed"} `}>
+      <div className="variable-controls-container">
+        <div
+          onClick={() => setOpen(!open)}
+          className="variable-controls__open-close"
+        >
+          <OpenClose />
+        </div>
+        <RangeInput
+          label="Background"
+          max="100"
+          min="0"
+          defaultValue="40"
+          step="20"
+          onChange={(e) => changeBackgroundOpacity(e)}
+        />
+        <RangeInput
+          label="Line Opacity"
+          max="100"
+          min="0"
+          defaultValue="40"
+          step="20"
+          onChange={(e) => changeLineOpacity(e)}
+        />
+        <RangeInput
+          label="Line Colors"
+          max={colors.length - 1}
+          min="1"
+          defaultValue="1"
+          step="1"
+          onChange={(e) => changeColors(e)}
+        />
+        <RangeInput
+          label="Draw Frequency"
+          max="6"
+          min="1"
+          defaultValue="1"
+          step="1"
+          onChange={(e) => {
+            drawFreq = e.target.value;
+          }}
+        />
+        <label htmlFor="backgroundFill">Fill Background</label>
+        <input
+          type="checkbox"
+          defaultChecked={true}
+          onChange={(e) => {
+            backgroundFill = e.target.checked;
+          }}
+        ></input>
+        <p onClick={() => setClearCanvas()}>Clear Canvas</p>
+        <p
+          onClick={() => {
+            maxLevel = 0;
+          }}
+        >
+          Reset Max Level
+        </p>
+      </div>
+    </div>
+  );
+};
+
+let song;
+let fft;
+let fftSize = 64; // 2, 4, 8, 32, 64, 128, 256, 512
+let opacityFill = 1; // 0.04 1
+let amp;
+let colorSelect = 0;
+let fft2;
+let fft2Size = 128;
+let backgroundFill = true;
+let backgroundOpacity = 0.03;
+let maxLevel = 0;
+let curve = true;
+let drawIteration = 0;
+let drawFreq = 1;
+let mic;
+let clearCanvas = false;
+
+const backgroundOpacityValues = [0.01, 0.02, 0.03, 0.04, 0.05, 1];
+const fftSizes = [8, 32, 64, 128, 256];
+const colors = [
+  ["#59c9a5", "#d81e5b", "#fffd98", "#23395b"],
+  ["#ff2328", "#ead2d7", "#bd6bd7", "#1d1564"],
+  ["#ED3312", "#0E1428", "#7B9E89", "#FFFFFF"],
+  ["#fdfc6e", "#07dfe3", "#fdf7f7", "#FFFFFF"],
+  ["#fd4339", "#4f32c8", "#edddde", "#FFFFFF"],
+  ["#ffffff", "#656565", "#ffffff", "#FFFFFF"],
+];
 
 function MicSpectrum() {
-  let song;
-  let fft;
-  let fftSize = 64; // 2, 4, 8, 32, 64, 128, 256, 512
-  let opacityFill = 1; // 0.04 1
-  let amp;
-  let colorSelect = 0;
-  let fft2;
-  let fft2Size = 128;
-  let backgroundFill = true;
-  let backgroundOpacity = 0.03;
-  let maxLevel = 0;
-  let curve = true;
-  let drawIteration = 0;
-  let drawFreq = 1;
-  let mic;
-  let clearCanvas = false;
-
   const width = window.innerWidth;
   const height = window.innerHeight;
 
   const heightStart = height - 100;
-
-  const colors = [
-    ["#59c9a5", "#d81e5b", "#fffd98", "#23395b"],
-    ["#ff2328", "#ead2d7", "#bd6bd7", "#1d1564"],
-    ["#ED3312", "#0E1428", "#7B9E89", "#FFFFFF"],
-    ["#fdfc6e", "#07dfe3", "#fdf7f7", "#FFFFFF"],
-    ["#fd4339", "#4f32c8", "#edddde", "#FFFFFF"],
-    ["#ffffff", "#656565", "#ffffff", "#FFFFFF"],
-  ];
-  const backgroundOpacityValues = [0.01, 0.02, 0.03, 0.04, 0.05, 1];
-  const fftSizes = [8, 32, 64, 128, 256];
-
-  const preload = (p5) => {
-    // song = p5.loadSound("assets/audio/BeginByLettingGo.mp3");
-  };
 
   const setup = (p5, canvasParentRef) => {
     p5.createCanvas(window.innerWidth, window.innerHeight).parent(
@@ -138,93 +224,14 @@ function MicSpectrum() {
     throw new Error("Bad Hex");
   };
 
-  const changeBackgroundOpacity = (e) => {
-    backgroundOpacity =
-      backgroundOpacityValues[Math.floor(100 / e.target.value)];
-  };
-
-  const changeLineOpacity = (e) => {
-    opacityFill = backgroundOpacityValues[Math.floor(100 / e.target.value)];
-  };
-
-  const changeFftSize = (e) => {
-    fftSize = fftSizes[e.target.value];
-  };
-
-  const changeColors = (e) => {
-    colorSelect = e.target.value - 1;
-  };
-
-  const setClearCanvas = () => {
-    clearCanvas = true;
-  };
-
   const windowResized = (p5) => {
     p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
   };
 
   return (
     <>
-      <Sketch
-        windowResized={windowResized}
-        preload={preload}
-        setup={setup}
-        draw={draw}
-      />
-      <div className="variable-controls">
-        <div className="variable-controls-container">
-          <RangeInput
-            label="Background"
-            max="100"
-            min="0"
-            defaultValue="40"
-            step="20"
-            onChange={(e) => changeBackgroundOpacity(e)}
-          />
-          <RangeInput
-            label="Line Opacity"
-            max="100"
-            min="0"
-            defaultValue="40"
-            step="20"
-            onChange={(e) => changeLineOpacity(e)}
-          />
-          <RangeInput
-            label="Line Colors"
-            max={colors.length - 1}
-            min="1"
-            defaultValue="1"
-            step="1"
-            onChange={(e) => changeColors(e)}
-          />
-          <RangeInput
-            label="Draw Frequency"
-            max="6"
-            min="1"
-            defaultValue="1"
-            step="1"
-            onChange={(e) => {
-              drawFreq = e.target.value;
-            }}
-          />
-          <label for="backgroundFill">Fill Background</label>
-          <input
-            type="checkbox"
-            defaultChecked={true}
-            onChange={(e) => {
-              backgroundFill = e.target.checked;
-            }}
-          ></input>
-          <p onClick={() => setClearCanvas()}>Clear Canvas</p>
-          <p
-            onClick={() => {
-              maxLevel = 0;
-            }}
-          >
-            Reset Max Level
-          </p>
-        </div>
-      </div>
+      <Sketch windowResized={windowResized} setup={setup} draw={draw} />
+      <VariableControls />
     </>
   );
 }

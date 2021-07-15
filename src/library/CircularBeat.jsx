@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Sketch from "react-p5";
 import Controls, { SketchInstance } from "components/Controls";
 import RangeInput from "components/Controls/components/RangeInput";
+import { ReactComponent as OpenClose } from "../assets/images/doubleleft.svg";
 
 // TODO: Match beat to radial circle?
 let particles = [];
@@ -51,6 +52,8 @@ function randomColor(colors) {
 }
 
 const VariableControls = ({ p5, sketch }) => {
+  const [open, setOpen] = useState(true);
+
   const changeVelocity = (e) => {
     velocity = parseInt(e.target.value) / 200;
     particles.forEach((particle) => {
@@ -112,8 +115,14 @@ const VariableControls = ({ p5, sketch }) => {
   };
 
   return (
-    <div className="variable-controls">
+    <div className={`variable-controls ${!open && "closed"} `}>
       <div className="variable-controls-container">
+        <div
+          onClick={() => setOpen(!open)}
+          className="variable-controls__open-close"
+        >
+          <OpenClose />
+        </div>
         <RangeInput
           label="Velocity"
           max="10"

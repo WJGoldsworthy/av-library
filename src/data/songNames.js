@@ -1,4 +1,4 @@
-export default [
+const songNames = [
   "thePark",
   "woman",
   "Unmissable",
@@ -38,3 +38,178 @@ export default [
   "Damselfly",
   "likeThePiano",
 ];
+
+export const musicData = [
+  {
+    name: "The Park",
+    artist: "Jackson Method",
+    file: "thePark",
+  },
+  {
+    name: "Woman",
+    artist: "Andreya Triana",
+    file: "woman",
+  },
+  {
+    name: "Experiment",
+    artist: "N/A",
+    file: "experiment",
+  },
+  {
+    name: "Track 1",
+    artist: "Skepta",
+    file: "track1",
+  },
+  {
+    name: "Hide",
+    artist: "Little May",
+    file: "Hide",
+  },
+  {
+    name: "Subzero",
+    artist: "Ben Klock",
+    file: "Subzero",
+  },
+  {
+    name: "Arcade Electro",
+    artist: "-",
+    file: "arcadeElectro",
+  },
+  {
+    name: "Gamma",
+    artist: "HWLS",
+    file: "Gamma",
+  },
+  {
+    name: "Blurred",
+    artist: "Kiasmos",
+    file: "blurred",
+  },
+  {
+    name: "Its Only Real",
+    artist: "Denis Sulta",
+    file: "itsOnlyReal",
+  },
+  {
+    name: "Full Circle",
+    artist: "George Fitzgerald",
+    file: "FullCircle",
+  },
+  {
+    name: "40/40",
+    artist: "Jamie T",
+    file: "4040",
+  },
+  {
+    name: "Silver Sun",
+    artist: "Clark",
+    file: "SilverSun",
+  },
+  {
+    name: "River",
+    artist: "Gardens of God",
+    file: "gardensOfGod",
+  },
+  {
+    name: "Apricots",
+    artist: "Bicep",
+    file: "apricots",
+  },
+  {
+    name: "Welcome to the Hell Zone",
+    artist: "Bobby Raps",
+    file: "hellzone",
+  },
+  {
+    name: "Opus",
+    artist: "Eric Prydz, Four tet",
+    file: "opus",
+  },
+  {
+    name: "Begin by Letting Go",
+    artist: "Etherwood",
+    file: "BeginByLettingGo",
+  },
+  {
+    name: "Human",
+    artist: "Julian Wassermann",
+    file: "human",
+  },
+  {
+    name: "Glue",
+    artist: "Bicep",
+    file: "Glue",
+  },
+  {
+    name: "Blue Boss",
+    artist: "Sampa the Great",
+    file: "BlueBoss",
+  },
+  {
+    name: "Saku",
+    artist: "Bicep",
+    file: "saku",
+  },
+  {
+    name: "Englands Dreaming",
+    artist: "Boston Manor",
+    file: "englandsDreaming",
+  },
+  {
+    name: "The Girl from Ipanema",
+    artist: "Getz and Gilberto",
+    file: "Ipanema",
+  },
+  {
+    name: "P's and Q's",
+    artist: "Kano",
+    file: "pandq",
+  },
+  {
+    name: "Angie (I've been lost)",
+    artist: "Fred Again",
+    file: "fredAgain",
+  },
+  {
+    name: "Opal",
+    artist: "Bicep",
+    file: "opal",
+  },
+  {
+    name: "Shipyards",
+    artist: "Lost Poets",
+    file: "shipyards",
+  },
+  {
+    name: "Call me in the Afternoon",
+    artist: "Half Moon Run",
+    file: "CallMeInTheAfternoon",
+  },
+  {
+    name: "Ego",
+    artist: "Burial, Four tet",
+    file: "Ego",
+  },
+  {
+    name: "What we want",
+    artist: "Alan FitzPatrick",
+    file: "whatWeWant",
+  },
+  {
+    name: "Too Late",
+    artist: "Tourist",
+    file: "TooLate",
+  },
+  {
+    name: "Damselfly",
+    artist: "Loyle Carner",
+    file: "Damselfly",
+  },
+  {
+    name: "Like the Piano",
+    artist: "Sampha",
+    file: "likeThePiano",
+  },
+];
+
+export default songNames;

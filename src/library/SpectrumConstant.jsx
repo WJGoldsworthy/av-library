@@ -4,35 +4,104 @@ import Sketch from "react-p5";
 import Controls, { SketchInstance } from "components/Controls";
 import RangeInput from "components/Controls/components/RangeInput";
 
+const VariableControls = () => {
+  const changeBackgroundOpacity = (e) => {
+    backgroundOpacity =
+      backgroundOpacityValues[Math.floor(100 / e.target.value)];
+  };
+
+  const changeLineOpacity = (e) => {
+    opacityFill = backgroundOpacityValues[Math.floor(100 / e.target.value)];
+  };
+
+  const changeColors = (e) => {
+    colorSelect = e.target.value - 1;
+  };
+  return (
+    <div className="variable-controls">
+      <div className="variable-controls-container">
+        <RangeInput
+          label="Background"
+          max="100"
+          min="0"
+          defaultValue="40"
+          step="20"
+          onChange={(e) => changeBackgroundOpacity(e)}
+        />
+        <RangeInput
+          label="Line Opacity"
+          max="100"
+          min="0"
+          defaultValue="40"
+          step="20"
+          onChange={(e) => changeLineOpacity(e)}
+        />
+        <RangeInput
+          label="Line Colors"
+          max={colors.length - 1}
+          min="1"
+          defaultValue="1"
+          step="1"
+          onChange={(e) => changeColors(e)}
+        />
+        <RangeInput
+          label="Draw Frequency"
+          max="6"
+          min="1"
+          defaultValue="1"
+          step="1"
+          onChange={(e) => {
+            drawFreq = e.target.value;
+          }}
+        />
+        <label for="backgroundFill">Fill Background</label>
+        <input
+          type="checkbox"
+          defaultChecked={true}
+          onChange={(e) => {
+            backgroundFill = e.target.checked;
+          }}
+        ></input>
+        <p
+          onClick={() => {
+            maxLevel = 0;
+          }}
+        >
+          Reset Max Level
+        </p>
+      </div>
+    </div>
+  );
+};
+
+let song;
+let amp;
+let maxLevel = 0;
+let drawIteration = 0;
+
+// Controlled Variables
+let backgroundFill = true;
+let opacityFill = 1; // 0.04 1
+let backgroundOpacity = 0.03;
+let fftSize = 64; // 2, 4, 8, 32, 64, 128, 256, 512
+let curve = true;
+let colorSelect = 0;
+let drawFreq = 1;
+
+let width = window.innerWidth;
+let height = window.innerHeight;
+let heightStart = height - 100;
+
+const colors = [
+  ["#59c9a5", "#d81e5b", "#fffd98", "#23395b"],
+  ["#ff2328", "#ead2d7", "#bd6bd7", "#1d1564"],
+  ["#ED3312", "#0E1428", "#7B9E89", "#FFFFFF"],
+  ["#fdfc6e", "#07dfe3", "#fdf7f7", "#FFFFFF"],
+  ["#fd4339", "#4f32c8", "#edddde", "#FFFFFF"],
+  ["#ffffff", "#656565", "#ffffff", "#FFFFFF"],
+];
+const backgroundOpacityValues = [0.01, 0.02, 0.03, 0.04, 0.05, 1];
 function SpectrumConstant() {
-  let song;
-  let amp;
-  let maxLevel = 0;
-  let drawIteration = 0;
-
-  // Controlled Variables
-  let backgroundFill = true;
-  let opacityFill = 1; // 0.04 1
-  let backgroundOpacity = 0.03;
-  let fftSize = 64; // 2, 4, 8, 32, 64, 128, 256, 512
-  let curve = true;
-  let colorSelect = 0;
-  let drawFreq = 1;
-
-  let width = window.innerWidth;
-  let height = window.innerHeight;
-  let heightStart = height - 100;
-
-  const colors = [
-    ["#59c9a5", "#d81e5b", "#fffd98", "#23395b"],
-    ["#ff2328", "#ead2d7", "#bd6bd7", "#1d1564"],
-    ["#ED3312", "#0E1428", "#7B9E89", "#FFFFFF"],
-    ["#fdfc6e", "#07dfe3", "#fdf7f7", "#FFFFFF"],
-    ["#fd4339", "#4f32c8", "#edddde", "#FFFFFF"],
-    ["#ffffff", "#656565", "#ffffff", "#FFFFFF"],
-  ];
-  const backgroundOpacityValues = [0.01, 0.02, 0.03, 0.04, 0.05, 1];
-
   const [sketch, setSketch] = useState({});
   let currentSong = "fredAgain";
 
@@ -157,19 +226,6 @@ function SpectrumConstant() {
     throw new Error("Bad Hex");
   };
 
-  const changeBackgroundOpacity = (e) => {
-    backgroundOpacity =
-      backgroundOpacityValues[Math.floor(100 / e.target.value)];
-  };
-
-  const changeLineOpacity = (e) => {
-    opacityFill = backgroundOpacityValues[Math.floor(100 / e.target.value)];
-  };
-
-  const changeColors = (e) => {
-    colorSelect = e.target.value - 1;
-  };
-
   return (
     <>
       <Controls sketch={sketch} />
@@ -179,59 +235,7 @@ function SpectrumConstant() {
         setup={setup}
         draw={draw}
       />
-      <div className="variable-controls">
-        <div className="variable-controls-container">
-          <RangeInput
-            label="Background"
-            max="100"
-            min="0"
-            defaultValue="40"
-            step="20"
-            onChange={(e) => changeBackgroundOpacity(e)}
-          />
-          <RangeInput
-            label="Line Opacity"
-            max="100"
-            min="0"
-            defaultValue="40"
-            step="20"
-            onChange={(e) => changeLineOpacity(e)}
-          />
-          <RangeInput
-            label="Line Colors"
-            max={colors.length - 1}
-            min="1"
-            defaultValue="1"
-            step="1"
-            onChange={(e) => changeColors(e)}
-          />
-          <RangeInput
-            label="Draw Frequency"
-            max="6"
-            min="1"
-            defaultValue="1"
-            step="1"
-            onChange={(e) => {
-              drawFreq = e.target.value;
-            }}
-          />
-          <label for="backgroundFill">Fill Background</label>
-          <input
-            type="checkbox"
-            defaultChecked={true}
-            onChange={(e) => {
-              backgroundFill = e.target.checked;
-            }}
-          ></input>
-          <p
-            onClick={() => {
-              maxLevel = 0;
-            }}
-          >
-            Reset Max Level
-          </p>
-        </div>
-      </div>
+      <VariableControls />
     </>
   );
 }
