@@ -143,11 +143,16 @@ export class SketchInstance {
     this.changeSong = this.changeSong.bind(this);
     this.clearCanvas = this.clearCanvas.bind(this);
     this.setAmp = this.setAmp.bind(this);
+    this.resetFFT = this.resetFFT.bind(this);
     this.options = options;
   }
 
   setOptions = (options) => {
     this.options = options;
+  };
+
+  resetFFT = (size) => {
+    this.fft = new this.p5.constructor.FFT(0.6, size);
   };
 
   setAmp = () => {

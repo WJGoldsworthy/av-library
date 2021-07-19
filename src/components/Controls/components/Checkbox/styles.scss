@@ -1,0 +1,24 @@
+.checkbox {
+  display: flex;
+  align-items: flex-end;
+  cursor: pointer;
+  margin-bottom: 16px;
+
+  &:hover {
+    font-weight: bold;
+  }
+
+  & p {
+    margin: 0;
+  }
+  &__box {
+    background: #575757;
+    height: 13px;
+    width: 13px;
+    border-radius: 1px;
+  }
+
+  &__label {
+    flex-grow: 1;
+  }
+}

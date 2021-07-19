@@ -3,8 +3,11 @@ import React, { useState, useEffect } from "react";
 import Sketch from "react-p5";
 import Controls, { SketchInstance } from "components/Controls";
 import RangeInput from "components/Controls/components/RangeInput";
+import Checkbox from "components/Controls/components/Checkbox";
+import { ReactComponent as OpenClose } from "../assets/images/doubleleft.svg";
 
 const VariableControls = () => {
+  const [open, setOpen] = useState(true);
   const changeBackgroundOpacity = (e) => {
     backgroundOpacity =
       backgroundOpacityValues[Math.floor(100 / e.target.value)];
@@ -18,8 +21,14 @@ const VariableControls = () => {
     colorSelect = e.target.value - 1;
   };
   return (
-    <div className="variable-controls">
+    <div className={`variable-controls ${!open && "closed"} `}>
       <div className="variable-controls-container">
+        <div
+          onClick={() => setOpen(!open)}
+          className="variable-controls__open-close"
+        >
+          <OpenClose />
+        </div>
         <RangeInput
           label="Background"
           max="100"
@@ -54,15 +63,15 @@ const VariableControls = () => {
             drawFreq = e.target.value;
           }}
         />
-        <label for="backgroundFill">Fill Background</label>
-        <input
-          type="checkbox"
-          defaultChecked={true}
-          onChange={(e) => {
-            backgroundFill = e.target.checked;
+        <Checkbox
+          label="Fill Background"
+          onChange={(checked) => {
+            backgroundFill = checked;
           }}
-        ></input>
+          defaultChecked={true}
+        />
         <p
+          className="control-button"
           onClick={() => {
             maxLevel = 0;
           }}

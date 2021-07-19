@@ -197,3 +197,11 @@
     margin-bottom: 30px;
   }
 }
+
+.control-button {
+  cursor: pointer;
+
+  &:hover {
+    font-weight: bold;
+  }
+}

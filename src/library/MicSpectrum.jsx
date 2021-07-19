@@ -1,6 +1,7 @@
 import "p5/lib/addons/p5.sound";
 import React, { useState } from "react";
 import RangeInput from "components/Controls/components/RangeInput";
+import Checkbox from "components/Controls/components/Checkbox";
 import Sketch from "react-p5";
 import { ReactComponent as OpenClose } from "../assets/images/doubleleft.svg";
 import "../components/Controls/styles.scss";
@@ -72,16 +73,18 @@ const VariableControls = () => {
             drawFreq = e.target.value;
           }}
         />
-        <label htmlFor="backgroundFill">Fill Background</label>
-        <input
-          type="checkbox"
-          defaultChecked={true}
-          onChange={(e) => {
-            backgroundFill = e.target.checked;
+        <Checkbox
+          label="Fill Background"
+          onChange={(checked) => {
+            backgroundFill = checked;
           }}
-        ></input>
-        <p onClick={() => setClearCanvas()}>Clear Canvas</p>
+          defaultChecked={true}
+        />
+        <p className="control-button" onClick={() => setClearCanvas()}>
+          Clear Canvas
+        </p>
         <p
+          className="control-button"
           onClick={() => {
             maxLevel = 0;
           }}

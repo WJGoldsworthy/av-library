@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Sketch from "react-p5";
 import Controls, { SketchInstance } from "components/Controls";
 import RangeInput from "components/Controls/components/RangeInput";
+import Checkbox from "components/Controls/components/Checkbox";
 import { ReactComponent as OpenClose } from "../assets/images/doubleleft.svg";
 
 // TODO: Match beat to radial circle?
@@ -27,6 +28,7 @@ let colorPick = 5;
 let height = window.innerHeight;
 let width = window.innerWidth;
 let currentTime = 0;
+let fftBias = false;
 
 var hexToRgbA = function (hex) {
   var c;
@@ -114,6 +116,16 @@ const VariableControls = ({ p5, sketch }) => {
     sketch.clearCanvas();
   };
 
+  const resetFFT = (isChecked) => {
+    if (isChecked) {
+      sketch.resetFFT(1024);
+      fftBias = true;
+    } else {
+      sketch.resetFFT(64);
+      fftBias = false;
+    }
+  };
+
   return (
     <div className={`variable-controls ${!open && "closed"} `}>
       <div className="variable-controls-container">
@@ -179,7 +191,10 @@ const VariableControls = ({ p5, sketch }) => {
           defaultValue="40"
           onChange={(e) => changeParticles(e)}
         />
-        <p onClick={() => clearCanvas()}>Clear Canvas</p>
+        <Checkbox label="Bass Bias" onChange={resetFFT} />
+        <p className="control-button" onClick={() => clearCanvas()}>
+          Clear Canvas
+        </p>
       </div>
     </div>
   );
@@ -296,7 +311,12 @@ function Particle(x, y, radius, color, velocity) {
 
   this.update = function (p5, num, spectrum) {
     const lastPoint = { x: this.x, y: this.y }; // Taking the last point before we re-draw.
-    var dist = Array.prototype.slice.call(spectrum)[num];
+    let dist = 0;
+    if (fftBias) {
+      dist = spectrum[num];
+    } else {
+      dist = Array.prototype.slice.call(spectrum)[num];
+    }
     this.radians += this.velocity;
     this.distanceFromCenter = this.initialDistance + dist / noise;
     // var dist = spectrum[num * Math.floor(128 / numParticles)];
