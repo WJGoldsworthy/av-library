@@ -132,6 +132,7 @@ export class SketchInstance {
       }.mp3`,
       () => {
         this.song.play();
+        this.amp = new p5.constructor.Amplitude();
         this.isLoaded = true;
         if (options.callback) {
           options.callback(p5);
