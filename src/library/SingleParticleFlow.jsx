@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Sketch from "react-p5";
 import config from "config";
 import ColorPicker from "components/ColorPicker";
+import RangeInput from "components/Controls/components/RangeInput";
 import "p5/lib/addons/p5.sound";
 import { ChromePicker } from "react-color";
 import { ReactComponent as OpenClose } from "../assets/images/doubleleft.svg";
@@ -29,6 +30,8 @@ let shouldChangeBackground = false;
 let color1 = [237, 51, 18];
 let color2 = [44, 81, 201];
 let background = [0, 0, 0];
+var noise_input = 0.2; // 0.2 is the best
+var strokeSize = 60;
 
 const VariableControls = () => {
   const [open, setOpen] = useState(true);
@@ -44,6 +47,14 @@ const VariableControls = () => {
   const changeBackground = (color) => {
     background = color;
     shouldChangeBackground = true;
+  };
+
+  const changeNoise = (e) => {
+    noise_input = e.target.value;
+  };
+
+  const changeStroke = (e) => {
+    strokeSize = e.target.value;
   };
 
   return (
@@ -69,6 +80,22 @@ const VariableControls = () => {
           setColor={changeBackground}
           defaultColor={background}
           label="Background"
+        />
+        <RangeInput
+          label="Noise"
+          max="1"
+          min="0"
+          step="0.1"
+          defaultValue="0.2"
+          onChange={(e) => changeNoise(e)}
+        />
+        <RangeInput
+          label="Stroke Size"
+          max="100"
+          min="10"
+          step="10"
+          defaultValue="60"
+          onChange={(e) => changeStroke(e)}
         />
       </div>
     </div>
@@ -129,7 +156,7 @@ export function Particle(p5) {
   this.maxV = 0;
 
   this.show = function (v, vol) {
-    p5.strokeWeight(60 * vol);
+    p5.strokeWeight(strokeSize * vol);
     p5.line(this.pos.x, this.pos.y, this.prevPos.x, this.prevPos.y);
     this.updatePrev();
   };
@@ -190,7 +217,6 @@ function ParticlesArt() {
 
   // Control for visualiser variables
   var speed_input = 1.5;
-  var noise_input = 0.2; // 0.2 is the best
   var num_particles = 1;
 
   //   const color1 = [237, 51, 18];
