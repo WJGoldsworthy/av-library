@@ -46,16 +46,14 @@ const sketches = [
     hidden: true,
   },
   {
-    label: "Single particle sqaure",
+    label: "Spaceships",
     path: "singleParticleSquare",
     component: <SingleParticleSquare />,
-    hidden: true,
   },
   {
     label: "Single particle Flow",
     path: "singleParticleFlow",
     component: <SingleParticleFlow />,
-    hidden: true,
   },
   {
     label: "Live Particles",

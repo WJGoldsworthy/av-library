@@ -169,7 +169,7 @@ function ParticlesArt() {
 
   const preload = (p5) => {
     // amp = new p5.constructor.Amplitude();
-    setSketch(new SketchInstance(p5, { currentSong: "hellzone" }), () => {
+    setSketch(new SketchInstance(p5, { currentSong: "Ego" }), () => {
       song = sketch.song;
       return;
     });

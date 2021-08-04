@@ -64,8 +64,16 @@ export function Particle(p5) {
     this.acc.add(force);
   };
 
-  const orange = [237, 51, 18];
-  const blue = [44, 81, 201];
+  // ORANGE BLUE
+  //   const orange = [237, 51, 18];
+  //   const blue = [44, 81, 201];
+
+  // BLUE RED
+  //   const orange = [0, 51, 18];
+  //   const blue = [44, 240, 0];
+
+  const orange = [0, 51, 200];
+  const blue = [44, 240, 0];
 
   this.maxV = 0;
 
@@ -131,13 +139,11 @@ function ParticlesArt() {
 
   // Control for visualiser variables
   var speed_input = 1.5;
-  var noise_input = 2;
+  var noise_input = 0.2; // 0.2 is the best
   var num_particles = 1;
   let song;
 
-  let pdBass, pdHigh;
-  let bassPeak = false;
-  let highPeak = false;
+  let pdBass;
 
   let freqRanges = [
     [20, 140],
@@ -149,6 +155,9 @@ function ParticlesArt() {
 
   const orange = [237, 51, 18];
   const blue = [44, 81, 201];
+
+  //   const orange = [237, 0, 0];
+  //   const blue = [0, 0, 255];
 
   //   const orange = [255, 255, 255];
   //   const blue = [255, 0, 0];
@@ -173,12 +182,6 @@ function ParticlesArt() {
   };
 
   const setup = (p5, canvasParentRef) => {
-    pdBass = new p5.constructor.PeakDetect(
-      freqRanges[0][0],
-      freqRanges[0][1],
-      0.95
-    );
-    pdBass.onPeak(bassPeaked);
     p5.createCanvas(window.innerWidth, window.innerHeight).parent(
       canvasParentRef
     );
@@ -206,11 +209,6 @@ function ParticlesArt() {
     // p5.blendMode(p5.SCREEN);
   };
 
-  const bassPeaked = () => {
-    console.log("bass peak");
-    bassPeak = true;
-  };
-
   const draw = (p5) => {
     sketch.checkOptions((newSong) => {
       p5.clear();
@@ -232,8 +230,6 @@ function ParticlesArt() {
   // Function for initialising and controlling perlin noise field
   function perlin(p5) {
     // p5.background(10, 20);
-    let spectrum = sketch.fft.analyze();
-    pdBass.update(sketch.fft);
     var vol = sketch.amp.getLevel();
 
     var diff = Math.abs(vol - prevol);
@@ -284,7 +280,7 @@ function ParticlesArt() {
 
     // Update particle speed based on audio volume
     var speed = speed_input + vol * 10; //55
-    // p5.stroke(255);
+    p5.stroke(255);
     const r = Math.round(
       Math.min(orange[0], blue[0]) +
         Math.abs(Math.cos(speed)) * Math.max(orange[0], blue[0])
@@ -297,16 +293,21 @@ function ParticlesArt() {
       Math.min(orange[2], blue[2]) +
         Math.abs(Math.sin(speed)) * Math.max(orange[2], blue[2])
     );
-    let red = Math.round(
-      p5.map(
-        vol,
-        0,
-        1,
-        Math.min(orange[0], blue[0]),
-        Math.max(orange[0], blue[0])
-      )
-    );
     p5.stroke(`rgb(${r}, ${g}, ${b})`);
+
+    // const r = Math.round(
+    //   Math.min(orange[0], blue[0]) +
+    //     Math.abs(Math.cos(speed)) * Math.max(orange[0], blue[0])
+    // );
+    // const g = Math.round(
+    //   Math.min(orange[1], blue[1]) +
+    //     Math.abs(Math.cos(speed)) * Math.max(orange[1], blue[1])
+    // );
+    // const b = Math.round(
+    //   Math.min(orange[2], blue[2]) +
+    //     Math.abs(Math.sin(speed)) * Math.max(orange[2], blue[2])
+    // );
+    // p5.stroke(`rgb(${g}, ${r}, ${b})`);
 
     for (var i = 0; i < particles.length; i++) {
       particles[i].follow(flowfield);
