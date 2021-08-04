@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Sketch from "react-p5";
 import config from "config";
+import ColorPicker from "components/ColorPicker";
 import "p5/lib/addons/p5.sound";
+import { ChromePicker } from "react-color";
+import { ReactComponent as OpenClose } from "../assets/images/doubleleft.svg";
+
 import Controls, { SketchInstance } from "components/Controls";
 
 var song;
@@ -20,6 +24,56 @@ var particles = [];
 var flowfield;
 var sector_length = 100;
 let shouldReset = false;
+let shouldChangeBackground = false;
+
+let color1 = [237, 51, 18];
+let color2 = [44, 81, 201];
+let background = [0, 0, 0];
+
+const VariableControls = () => {
+  const [open, setOpen] = useState(true);
+
+  const changeColor1 = (color) => {
+    color1 = color;
+  };
+
+  const changeColor2 = (color) => {
+    color2 = color;
+  };
+
+  const changeBackground = (color) => {
+    background = color;
+    shouldChangeBackground = true;
+  };
+
+  return (
+    <div className={`variable-controls ${!open && "closed"} `}>
+      <div className="variable-controls-container">
+        <div
+          onClick={() => setOpen(!open)}
+          className="variable-controls__open-close"
+        >
+          <OpenClose />
+        </div>
+        <ColorPicker
+          setColor={changeColor1}
+          defaultColor={color1}
+          label="Color 1"
+        />
+        <ColorPicker
+          setColor={changeColor2}
+          defaultColor={color2}
+          label="Color 2"
+        />
+        <ColorPicker
+          setColor={changeBackground}
+          defaultColor={background}
+          label="Background"
+        />
+      </div>
+    </div>
+  );
+};
 
 // Custom particles for use in visualiser
 export function Particle(p5) {
@@ -64,16 +118,13 @@ export function Particle(p5) {
     this.acc.add(force);
   };
 
-  // ORANGE BLUE
-  //   const orange = [237, 51, 18];
-  //   const blue = [44, 81, 201];
+  // orange blue
+  //   const color1 = [237, 51, 18];
+  //   const color2 = [44, 81, 201];
 
-  // BLUE RED
-  //   const orange = [0, 51, 18];
-  //   const blue = [44, 240, 0];
-
-  const orange = [0, 51, 200];
-  const blue = [44, 240, 0];
+  // blue RED
+  //   const color1 = [0, 51, 18];
+  //   const color2 = [44, 240, 0];
 
   this.maxV = 0;
 
@@ -141,26 +192,15 @@ function ParticlesArt() {
   var speed_input = 1.5;
   var noise_input = 0.2; // 0.2 is the best
   var num_particles = 1;
-  let song;
 
-  let pdBass;
+  //   const color1 = [237, 51, 18];
+  //   const color2 = [44, 81, 201];
 
-  let freqRanges = [
-    [20, 140],
-    [140, 400],
-    [400, 2600],
-    [2600, 5200],
-    [5200, 14000],
-  ];
+  //   const color1 = [237, 160, 0];
+  //   const color2 = [255, 0, 255];
 
-  const orange = [237, 51, 18];
-  const blue = [44, 81, 201];
-
-  //   const orange = [237, 0, 0];
-  //   const blue = [0, 0, 255];
-
-  //   const orange = [255, 255, 255];
-  //   const blue = [255, 0, 0];
+  //   const color1 = [255, 255, 255];
+  //   const color2 = [255, 0, 0];
 
   // Unmount clean up
   useEffect(() => {
@@ -205,15 +245,23 @@ function ParticlesArt() {
     if (width > 1300) {
       prespeed = 5;
     }
-    p5.background(0);
+    p5.background(`rgb(${background[0]}, ${background[1]}, ${background[2]})`);
     // p5.blendMode(p5.SCREEN);
   };
 
   const draw = (p5) => {
     sketch.checkOptions((newSong) => {
       p5.clear();
-      p5.background(0);
+      p5.background(
+        `rgb(${background[0]}, ${background[1]}, ${background[2]})`
+      );
     });
+    if (shouldChangeBackground) {
+      p5.background(
+        `rgb(${background[0]}, ${background[1]}, ${background[2]})`
+      );
+      shouldChangeBackground = false;
+    }
     if (shouldReset) {
       particles = [];
       for (var i = 0; i < num_particles; i++) {
@@ -282,32 +330,22 @@ function ParticlesArt() {
     var speed = speed_input + vol * 10; //55
     p5.stroke(255);
     const r = Math.round(
-      Math.min(orange[0], blue[0]) +
-        Math.abs(Math.cos(speed)) * Math.max(orange[0], blue[0])
+      Math.min(color1[0], color2[0]) +
+        Math.abs(Math.cos(speed)) * Math.max(color1[0], color2[0])
     );
     const g = Math.round(
-      Math.min(orange[1], blue[1]) +
-        Math.abs(Math.cos(speed)) * Math.max(orange[1], blue[1])
+      Math.min(color1[1], color2[1]) +
+        Math.abs(Math.cos(speed)) * Math.max(color1[1], color2[1])
     );
     const b = Math.round(
-      Math.min(orange[2], blue[2]) +
-        Math.abs(Math.sin(speed)) * Math.max(orange[2], blue[2])
+      Math.min(color1[2], color2[2]) +
+        Math.abs(Math.sin(speed)) * Math.max(color1[2], color2[2])
     );
     p5.stroke(`rgb(${r}, ${g}, ${b})`);
 
-    // const r = Math.round(
-    //   Math.min(orange[0], blue[0]) +
-    //     Math.abs(Math.cos(speed)) * Math.max(orange[0], blue[0])
-    // );
-    // const g = Math.round(
-    //   Math.min(orange[1], blue[1]) +
-    //     Math.abs(Math.cos(speed)) * Math.max(orange[1], blue[1])
-    // );
-    // const b = Math.round(
-    //   Math.min(orange[2], blue[2]) +
-    //     Math.abs(Math.sin(speed)) * Math.max(orange[2], blue[2])
-    // );
-    // p5.stroke(`rgb(${g}, ${r}, ${b})`);
+    //rainbow
+    // p5.colorMode(p5.HSB);
+    // p5.stroke(b, g, r);
 
     for (var i = 0; i < particles.length; i++) {
       particles[i].follow(flowfield);
@@ -327,6 +365,7 @@ function ParticlesArt() {
 
   return (
     <>
+      <VariableControls />
       <Sketch
         windowResized={windowResized}
         preload={preload}
