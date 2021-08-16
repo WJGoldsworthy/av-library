@@ -3,8 +3,8 @@ import Sketch from "react-p5";
 import config from "config";
 import ColorPicker from "components/ColorPicker";
 import RangeInput from "components/Controls/components/RangeInput";
+import Checkbox from "components/Controls/components/Checkbox";
 import "p5/lib/addons/p5.sound";
-import { ChromePicker } from "react-color";
 import { ReactComponent as OpenClose } from "../assets/images/doubleleft.svg";
 
 import Controls, { SketchInstance } from "components/Controls";
@@ -32,6 +32,11 @@ let color2 = [44, 81, 201];
 let background = [0, 0, 0];
 var noise_input = 0.2; // 0.2 is the best
 var strokeSize = 60;
+var artMode = false;
+
+var rCos = false;
+var gCos = false;
+var bCos = false;
 
 const VariableControls = () => {
   const [open, setOpen] = useState(true);
@@ -55,6 +60,21 @@ const VariableControls = () => {
 
   const changeStroke = (e) => {
     strokeSize = e.target.value;
+  };
+
+  const setArtMode = (isChecked) => {
+    artMode = isChecked;
+  };
+
+  const setRcos = (isChecked) => {
+    rCos = isChecked;
+  };
+
+  const setGcos = (isChecked) => {
+    gCos = isChecked;
+  };
+  const setBcos = (isChecked) => {
+    bCos = isChecked;
   };
 
   return (
@@ -81,6 +101,10 @@ const VariableControls = () => {
           defaultColor={background}
           label="Background"
         />
+        <Checkbox label="Art Mode" onChange={setArtMode} />
+        <Checkbox label="R Cos" onChange={setRcos} />
+        <Checkbox label="G Cos" onChange={setGcos} />
+        <Checkbox label="B Cos" onChange={setBcos} />
         <RangeInput
           label="Noise"
           max="1"
@@ -167,21 +191,40 @@ export function Particle(p5) {
   };
 
   this.edges = function () {
-    if (this.pos.x > width) {
-      this.pos.x = 0;
-      this.updatePrev();
-    }
-    if (this.pos.x < 0) {
-      this.pos.x = width;
-      this.updatePrev();
-    }
-    if (this.pos.y > height) {
-      this.pos.y = 0;
-      this.updatePrev();
-    }
-    if (this.pos.y < 0) {
-      this.pos.y = height;
-      this.updatePrev();
+    if (artMode) {
+      if (this.pos.x > width - 40) {
+        this.pos.x = 80;
+        this.updatePrev();
+      }
+      if (this.pos.x < 80) {
+        this.pos.x = width - 40;
+        this.updatePrev();
+      }
+      if (this.pos.y > height - 40) {
+        this.pos.y = 0;
+        this.updatePrev();
+      }
+      if (this.pos.y < 0) {
+        this.pos.y = height - 40;
+        this.updatePrev();
+      }
+    } else {
+      if (this.pos.x > width) {
+        this.pos.x = 0;
+        this.updatePrev();
+      }
+      if (this.pos.x < 0) {
+        this.pos.x = width;
+        this.updatePrev();
+      }
+      if (this.pos.y > height) {
+        this.pos.y = 0;
+        this.updatePrev();
+      }
+      if (this.pos.y < 0) {
+        this.pos.y = height;
+        this.updatePrev();
+      }
     }
   };
 
@@ -355,18 +398,33 @@ function ParticlesArt() {
     // Update particle speed based on audio volume
     var speed = speed_input + vol * 10; //55
     p5.stroke(255);
-    const r = Math.round(
-      Math.min(color1[0], color2[0]) +
-        Math.abs(Math.cos(speed)) * Math.max(color1[0], color2[0])
-    );
-    const g = Math.round(
-      Math.min(color1[1], color2[1]) +
-        Math.abs(Math.cos(speed)) * Math.max(color1[1], color2[1])
-    );
-    const b = Math.round(
-      Math.min(color1[2], color2[2]) +
-        Math.abs(Math.sin(speed)) * Math.max(color1[2], color2[2])
-    );
+    const r = rCos
+      ? Math.round(
+          Math.min(color1[0], color2[0]) +
+            Math.abs(Math.cos(speed)) * Math.max(color1[0], color2[0])
+        )
+      : Math.round(
+          Math.min(color1[0], color2[0]) +
+            Math.abs(Math.sin(speed)) * Math.max(color1[0], color2[0])
+        );
+    const g = gCos
+      ? Math.round(
+          Math.min(color1[1], color2[1]) +
+            Math.abs(Math.cos(speed)) * Math.max(color1[1], color2[1])
+        )
+      : Math.round(
+          Math.min(color1[1], color2[1]) +
+            Math.abs(Math.sin(speed)) * Math.max(color1[1], color2[1])
+        );
+    const b = bCos
+      ? Math.round(
+          Math.min(color1[2], color2[2]) +
+            Math.abs(Math.cos(speed)) * Math.max(color1[2], color2[2])
+        )
+      : Math.round(
+          Math.min(color1[2], color2[2]) +
+            Math.abs(Math.sin(speed)) * Math.max(color1[2], color2[2])
+        );
     p5.stroke(`rgb(${r}, ${g}, ${b})`);
 
     //rainbow
